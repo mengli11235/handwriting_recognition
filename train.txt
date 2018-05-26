@@ -1,0 +1,5 @@
+data/img/P106-Fg002-R-C01-R01-fused.jpg
+data/img/P123-Fg001-R-C01-R01-fused.jpg
+data/img/P123-Fg002-R-C01-R01-fused.jpg
+data/img/P21-Fg006-R-C01-R01-fused.jpg
+data/img/P22-Fg008-R-C01-R01-fused.jpg
