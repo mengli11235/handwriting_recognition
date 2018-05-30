@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import os
+import tensorflow as tf
 
 from network import Network
 
@@ -53,15 +54,16 @@ def train():
             else:
                 network.train_batch(dataBatches[batchIdx], labelBatches[batchIdx])
         if epoch % PRINT_ACC_EVERY_N_EPOCHS == 0:
-            print("@epoch ", epoch, "/", N_ITERATIONS, " validation accuracy = ", test())
+            print("@epoch ", epoch, "/", N_ITERATIONS, " validation accuracy = ", accuracy())
         #if epoch % MAKE_CHECKPOINT_EACH_N_ITERATIONS == 0 and epoch != 0:
         #    network.store_checkpoint(CHECKPOINT_DIR)
 
 
-def put():
+def accuracy():
     # nBatches = len(validationDataBatches)
 
     runningAvg = 0.0
+
     nBatches = len(validationDataBatches)
     ##print "nData = ", nData
     # print "vallabshape ", validationLabelBatches.shape
@@ -71,7 +73,7 @@ def put():
                                      validationLabelBatches[batchIdx][:remainder_test])
         else:
             acc = network.test_batch(validationDataBatches[batchIdx], validationLabelBatches[batchIdx])
-        runningAvg += acc  # * len(validationDataBatches)
+        runningAvg += acc[0]  # * len(validationDataBatches)
     runningAvg /= nBatchesValidation
     return runningAvg
 
