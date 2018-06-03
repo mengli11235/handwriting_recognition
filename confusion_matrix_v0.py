@@ -97,7 +97,7 @@ cnf_matrix = confusion_matrix(y_true, y_pred)
 np.set_printoptions(precision=2)
 
 # Plot non-normalized confusion matrix
-plt.figure()
+plt.figure(figsize=(20,10))
 plot_confusion_matrix(cnf_matrix, classes=class_names,
                       title='Confusion matrix')
 
