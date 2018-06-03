@@ -25,8 +25,8 @@ from sklearn import svm, datasets
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 
-y_true = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15, 6,17,18,18,19,20,21,21,23,24,25,26]
-y_pred = [4,1,2,3,4,5,6,7,8,9,10, 0,12,13,14,15,16,17,18,18,19,20,21,21,23,24,25,26]
+y_true = []
+y_pred = []
 class_names = [ 'Alef',  
                 'Ayin', 
                 'Bet',
