@@ -27,26 +27,7 @@ from sklearn.metrics import confusion_matrix
 
 y_true = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15, 6,17,18,18,19,20,21,21,23,24,25,26]
 y_pred = [4,1,2,3,4,5,6,7,8,9,10, 0,12,13,14,15,16,17,18,18,19,20,21,21,23,24,25,26]
-
-def plot_confusion_matrix(cm, classes,
-                          normalize=False,
-                          title='Confusion matrix',
-                          cmap=plt.cm.Blues):
-    """
-    This function prints and plots the confusion matrix.
-    Normalization can be applied by setting `normalize=True`.
-    """
-    #if normalize:
-     #   cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-    #    print("Normalized confusion matrix")
-   # else:
- 
-    
-    print('Confusion matrix, without normalization')
-
-    print(cm)
-     
-    classes = [ 'Alef',  
+class_names = [ 'Alef',  
                 'Ayin', 
                 'Bet',
                 'Dalet',
@@ -74,6 +55,25 @@ def plot_confusion_matrix(cm, classes,
                 'Yod',
                 'Zayin'
     ]
+def plot_confusion_matrix(cm, classes,
+                          normalize=False,
+                          title='Confusion matrix',
+                          cmap=plt.cm.Blues):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    """
+    #if normalize:
+     #   cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+    #    print("Normalized confusion matrix")
+   # else:
+ 
+    
+    print('Confusion matrix, without normalization')
+
+    print(cm)
+     
+    
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)
     plt.colorbar()
