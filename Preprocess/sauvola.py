@@ -27,15 +27,15 @@ plt.show()
 
 plt.imshow(binary_global, cmap=plt.cm.gray)
 cv_image = img_as_ubyte(binary_global)
-cv2.imwrite('i1.png', cv_image)
+# cv2.imwrite('i1.png', cv_image)
 plt.show()
 
 plt.imshow(binary_niblack, cmap=plt.cm.gray)
 cv_image = img_as_ubyte(binary_niblack)
-cv2.imwrite('i2.png', cv_image)
+# cv2.imwrite('i2.png', cv_image)
 plt.show()
 
 plt.imshow(binary_sauvola, cmap=plt.cm.gray)
 cv_image = img_as_ubyte(binary_sauvola)
-cv2.imwrite('i3.png', cv_image)
+# cv2.imwrite('i3.png', cv_image)
 plt.show()
