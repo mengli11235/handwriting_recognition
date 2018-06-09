@@ -18,13 +18,23 @@ window_size = 15
 thresh_sauvola = threshold_sauvola(image, window_size=window_size, k=0.45)
 binary_sauvola = image > thresh_sauvola
 
-# plt.imshow(image, cmap=plt.cm.gray)
 cv_image = img_as_ubyte(binary_sauvola)
-# cv2.imwrite('i3.png', cv_image)
+ret, labels = cv2.connectedComponents(cv_image)
 
-hist = cv2.reduce(cv_image, 1, cv2.REDUCE_AVG).reshape(-1)
-
-print(len(hist))
-plt.plot(hist)
+plt.imshow(cv_image, cmap=plt.cm.gray)
 plt.show()
 
+# Map component labels to hue val
+label_hue = np.uint8(179 * labels / np.max(labels))
+blank_ch = 255 * np.ones_like(label_hue)
+labeled_img = cv2.merge([label_hue, blank_ch, blank_ch])
+
+# cvt to BGR for display
+labeled_img = cv2.cvtColor(labeled_img, cv2.COLOR_HSV2BGR)
+
+# set bg label to black
+labeled_img[label_hue == 0] = 0
+
+# cv2.imshow('labeled.png', labeled_img)
+plt.imshow(labeled_img, cmap=plt.cm.gray)
+plt.show()
