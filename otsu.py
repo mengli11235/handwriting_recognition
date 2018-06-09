@@ -8,10 +8,11 @@ from skimage import exposure
 import glob
 
 # set your working directory
-os.chdir('D:\\darknet\\darknet-master\\build\\darknet\\x64')
+# os.chdir('D:\\darknet\\darknet-master\\build\\darknet\\x64')
+os.chdir('./')
 
 
-dirList = glob.glob("source\\image-data\\*fused.jpg")
+dirList = glob.glob("Labels/*fused.jpg")
 for d in dirList:
     # print(d)
     # read image
