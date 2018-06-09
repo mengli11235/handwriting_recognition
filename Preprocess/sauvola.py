@@ -16,10 +16,9 @@ image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 binary_global = image > threshold_otsu(image)
 
-window_size = 25
+window_size = 15
 thresh_niblack = threshold_niblack(image, window_size=window_size, k=0.8)
-thresh_sauvola = threshold_sauvola(image, window_size=window_size)
-
+thresh_sauvola = threshold_sauvola(image, window_size=window_size, k=0.45)
 binary_niblack = image > thresh_niblack
 binary_sauvola = image > thresh_sauvola
 
@@ -28,11 +27,15 @@ plt.show()
 
 plt.imshow(binary_global, cmap=plt.cm.gray)
 cv_image = img_as_ubyte(binary_global)
-cv2.imwrite('gray_image.png', cv_image)
+cv2.imwrite('i1.png', cv_image)
 plt.show()
 
 plt.imshow(binary_niblack, cmap=plt.cm.gray)
+cv_image = img_as_ubyte(binary_niblack)
+cv2.imwrite('i2.png', cv_image)
 plt.show()
 
 plt.imshow(binary_sauvola, cmap=plt.cm.gray)
+cv_image = img_as_ubyte(binary_sauvola)
+cv2.imwrite('i3.png', cv_image)
 plt.show()
