@@ -14,8 +14,8 @@ image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 # cv2.imwrite('gray_image.png', image)
 # image = cv2.imread('./gray_image.png')
 
-window_size = 69
-thresh_sauvola = threshold_sauvola(image, window_size=window_size, k=0.9)
+window_size = 29
+thresh_sauvola = threshold_sauvola(image, window_size=window_size, k=0.5)
 binary_sauvola = image > thresh_sauvola
 binary_global = image > threshold_otsu(image)
 
@@ -66,9 +66,9 @@ plt.show()
 # cv2.drawContours(image, contours, 0, (0, 255, 0), 6)
 # cv2.waitKey()
 
-cv2.imwrite('./t.jpg', img2)
-image = cv2.imread('t.jpg')
-im_bw = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+cv2.imwrite('./tmp.jpg', img2)
+tmp = cv2.imread('tmp.jpg')
+im_bw = cv2.cvtColor(tmp, cv2.COLOR_RGB2GRAY)
 im_bw = 255 - im_bw
 nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(im_bw, connectivity=4)
 sizes = stats[:, -1]
@@ -86,4 +86,17 @@ img3[output == max_label] = 255
 plt.imshow(img3, cmap=plt.cm.gray)
 plt.show()
 
+plt.imshow(image, cmap=plt.cm.gray)
+plt.show()
+image[img3 == 255] = 255
+plt.imshow(image, cmap=plt.cm.gray)
+plt.show()
 
+s_img_2 = img_as_ubyte(binary_sauvola)
+s_img_2[img3 == 255] = 255
+# window_size = 15
+# thresh_sauvola = threshold_sauvola(image, window_size=window_size, k=0.5)
+# binary_sauvola = image > thresh_sauvola
+# s_img_2 = img_as_ubyte(binary_sauvola)
+plt.imshow(s_img_2, cmap=plt.cm.gray)
+plt.show()
