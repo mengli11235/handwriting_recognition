@@ -20,22 +20,12 @@ binary_sauvola = image > thresh_sauvola
 binary_global = image > threshold_otsu(image)
 
 cv_image = img_as_ubyte(binary_global)
+# cv_image = 255 - cv_image
 ret, labels = cv2.connectedComponents(cv_image)
 
-nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(cv_image, connectivity=8)
-sizes = stats[:, -1]
-max_label = 1
-max_size = sizes[1]
-for i in range(2, nb_components):
-    if sizes[i] > max_size:
-        max_label = i
-        max_size = sizes[i]
-img2 = np.zeros(output.shape)
-img2[output == max_label] = 255
-
 # cv_image = (255 - cv_image)
-# plt.imshow(cv_image, cmap=plt.cm.gray)
-# plt.show()
+plt.imshow(cv_image, cmap=plt.cm.gray)
+plt.show()
 
 # Map component labels to hue val
 label_hue = np.uint8(179 * labels / np.max(labels))
@@ -58,7 +48,42 @@ for i in range(2, nb_components):
         max_size = sizes[i]
 img2 = np.zeros(output.shape)
 img2[output == max_label] = 255
+# for i in img2:
+#     for j in i:
+#         print(j)
 
-# cv2.imshow('labeled.png', labeled_img)
 plt.imshow(img2, cmap=plt.cm.gray)
 plt.show()
+# cv2.imwrite('./t.jpg', img2)
+# image = cv2.imread('t.jpg')
+# im_bw = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+#
+# ret, thresh = cv2.threshold(im_bw, 100, 255, 0)
+# print(ret)
+# print(thresh)
+# im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+# print(contours)
+# cv2.drawContours(image, contours, 0, (0, 255, 0), 6)
+# cv2.waitKey()
+
+cv2.imwrite('./t.jpg', img2)
+image = cv2.imread('t.jpg')
+im_bw = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+im_bw = 255 - im_bw
+nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(im_bw, connectivity=4)
+sizes = stats[:, -1]
+max_label = 1
+max_size = sizes[1]
+for i in range(2, nb_components):
+    if sizes[i] > max_size:
+        max_label = i
+        max_size = sizes[i]
+img3 = np.zeros(output.shape)
+img3[output == max_label] = 255
+# for i in img3[200]:
+#     print(i)
+
+plt.imshow(img3, cmap=plt.cm.gray)
+plt.show()
+
+

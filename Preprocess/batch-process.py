@@ -14,13 +14,13 @@ for d in dirList:
     image = cv2.imread(d)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    window_size = 15
+    window_size = 69
     thresh_sauvola = threshold_sauvola(image, window_size=window_size, k=0.45)
     binary_sauvola = image > thresh_sauvola
     binary_global = image > threshold_otsu(image)
 
-    cv_image = img_as_ubyte(binary_global)
-    cv_image = cv2.GaussianBlur(cv_image, (5, 5), 0)
+    cv_image = img_as_ubyte(binary_sauvola)
+    # cv_image = cv2.GaussianBlur(cv_image, (5, 5), 0)
     # cv2.imwrite(os.path.join('./Output/sauvola/', d.split('/')[-1]), cv_image)
 
     # ret, labels = cv2.connectedComponents(cv_image)
@@ -39,12 +39,14 @@ for d in dirList:
     sizes = stats[:, -1]
     max_label = 1
     max_size = sizes[1]
+    second_max_label = 1
     for i in range(2, nb_components):
         if sizes[i] > max_size:
+            second_max_label = max_label
             max_label = i
             max_size = sizes[i]
     img2 = np.zeros(output.shape)
-    img2[output == max_label] = 255
+    img2[output == second_max_label] = 255
     cv2.imwrite(os.path.join('./Output/connected2/', d.split('/')[-1]), img2)
 
     print("success")
