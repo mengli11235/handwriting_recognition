@@ -20,10 +20,8 @@ binary_sauvola = image > thresh_sauvola
 binary_global = image > threshold_otsu(image)
 
 cv_image = img_as_ubyte(binary_global)
-# cv_image = 255 - cv_image
-ret, labels = cv2.connectedComponents(cv_image)
 
-# cv_image = (255 - cv_image)
+ret, labels = cv2.connectedComponents(cv_image)
 plt.imshow(cv_image, cmap=plt.cm.gray)
 plt.show()
 
