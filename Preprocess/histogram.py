@@ -140,9 +140,6 @@ plt.show()
 
 hist = cv2.reduce(s_img_2, 1, cv2.REDUCE_AVG).reshape(-1)
 
-plt.plot(hist)
-plt.show()
-
 th = 250
 H, W = s_img_2.shape[:2]
 uppers = [y for y in range(H - 1) if hist[y] <= th < hist[y + 1]]
@@ -158,11 +155,17 @@ rotated = cv2.cvtColor(s_img_2, cv2.COLOR_GRAY2BGR)
 import scipy.signal as ss
 from Preprocess.tools.peakdetect import *
 
-peaks = peakdetect(hist, lookahead=20)
+peaks = peakdetect(hist, lookahead=30)
+
 for y in peaks[0]:
-    cv2.line(rotated, (0, y[0]), (W, y[0]), (0, 255, 0), 1)
+    plt.plot(y[0], y[1], "r*")
+    # cv2.line(rotated, (0, y[0]), (W, y[0]), (255, 0, 0), 1)
 for y in peaks[1]:
-    cv2.line(rotated, (0, y[0]), (W, y[0]), (255, 0, 0), 1)
+    plt.plot(y[0], y[1], "g*")
+    cv2.line(rotated, (0, y[0]), (W, y[0]), (0, 255, 0), 3)
+    print(y)
+plt.plot(hist)
+plt.show()
 
 # indexes = ss.find_peaks_cwt(hist, np.arange(1, 300))
 # for y in indexes:
