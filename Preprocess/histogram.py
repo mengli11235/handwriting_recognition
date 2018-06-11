@@ -159,7 +159,7 @@ peaks = peakdetect(hist, lookahead=30)
 
 for y in peaks[0]:
     plt.plot(y[0], y[1], "r*")
-    # cv2.line(rotated, (0, y[0]), (W, y[0]), (255, 0, 0), 1)
+    cv2.line(rotated, (0, y[0]), (W, y[0]), (255, 0, 0), 3)
 for y in peaks[1]:
     plt.plot(y[0], y[1], "g*")
     cv2.line(rotated, (0, y[0]), (W, y[0]), (0, 255, 0), 3)

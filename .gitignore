@@ -264,3 +264,4 @@ Output/connected2/*.jpg
 Output/connected_otsu/*.jpg
 Output/cc_sauvola/*.jpg
 Output/li_sauvola/*.jpg
+Output/segmentation/*.jpg
