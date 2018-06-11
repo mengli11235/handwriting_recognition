@@ -81,7 +81,7 @@ def threshold_li(image):
 
 
 # image = cv2.imread('../Labels/seg_test.jpg')
-image = cv2.imread('../Labels/P344-Fg001-R-C01-R01-fused.jpg')
+image = cv2.imread('../Labels/P168-Fg016-R-C01-R01-fused.jpg')
 image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 window_size = 29
@@ -141,4 +141,34 @@ plt.show()
 hist = cv2.reduce(s_img_2, 1, cv2.REDUCE_AVG).reshape(-1)
 
 plt.plot(hist)
+plt.show()
+
+th = 250
+H, W = s_img_2.shape[:2]
+uppers = [y for y in range(H - 1) if hist[y] <= th < hist[y + 1]]
+lowers = [y for y in range(H - 1) if hist[y] > th >= hist[y + 1]]
+
+rotated = cv2.cvtColor(s_img_2, cv2.COLOR_GRAY2BGR)
+# for y in uppers:
+#     cv2.line(rotated, (0, y), (W, y), (255, 0, 0), 1)
+#
+# for y in lowers:
+#     cv2.line(rotated, (0, y), (W, y), (0, 255, 0), 1)
+
+import scipy.signal as ss
+from Preprocess.tools.peakdetect import *
+
+peaks = peakdetect(hist, lookahead=20)
+for y in peaks[0]:
+    cv2.line(rotated, (0, y[0]), (W, y[0]), (0, 255, 0), 1)
+for y in peaks[1]:
+    cv2.line(rotated, (0, y[0]), (W, y[0]), (255, 0, 0), 1)
+
+# indexes = ss.find_peaks_cwt(hist, np.arange(1, 300))
+# for y in indexes:
+#     cv2.line(rotated, (0, y), (W, y), (0, 255, 0), 1)
+# print(indexes)
+
+# cv2.imwrite("tmp.jpg", rotated)
+plt.imshow(rotated, cmap=plt.cm.gray)
 plt.show()
