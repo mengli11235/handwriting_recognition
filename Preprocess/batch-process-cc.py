@@ -139,7 +139,6 @@ for d in dirList:
     s_img_2 = img_as_ubyte(binary_sauvola)
     s_img_2[img3 == 255] = 255
     # cv2.imwrite(os.path.join('./Output/cc_sauvola/', d.split('/')[-1]), s_img_2)
-    # cv2.imwrite(os.path.join('./Output/li_sauvola/', d.split('/')[-1]), s_img_2)
-    cv2.imwrite(os.path.join('./Output/combination/', d.split('/')[-1]), cv_image)
+    cv2.imwrite(os.path.join('./Output/li_sauvola/', d.split('/')[-1]), s_img_2)
 
     print("success")
