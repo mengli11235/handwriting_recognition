@@ -46,7 +46,7 @@ for d in dirList:
             max_label = i
             max_size = sizes[i]
     img2 = np.zeros(output.shape)
-    img2[output == second_max_label] = 255
+    img2[output == max_label] = 255
     cv2.imwrite(os.path.join('./Output/connected2/', d.split('/')[-1]), img2)
 
     print("success")
