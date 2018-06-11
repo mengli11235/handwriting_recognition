@@ -81,7 +81,7 @@ def threshold_li(image):
 
 
 # image = cv2.imread('../Labels/seg_test.jpg')
-image = cv2.imread('../Labels/P168-Fg016-R-C01-R01-fused.jpg')
+image = cv2.imread('../Labels/P123-Fg001-R-C01-R01-fused.jpg')
 image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 window_size = 29
@@ -152,7 +152,6 @@ rotated = cv2.cvtColor(s_img_2, cv2.COLOR_GRAY2BGR)
 # for y in lowers:
 #     cv2.line(rotated, (0, y), (W, y), (0, 255, 0), 1)
 
-import scipy.signal as ss
 from Preprocess.tools.peakdetect import *
 
 peaks = peakdetect(hist, lookahead=30)
@@ -163,7 +162,7 @@ for y in peaks[0]:
 for y in peaks[1]:
     plt.plot(y[0], y[1], "g*")
     cv2.line(rotated, (0, y[0]), (W, y[0]), (0, 255, 0), 3)
-    print(y)
+    # print(y)
 plt.plot(hist)
 plt.show()
 
@@ -175,3 +174,37 @@ plt.show()
 # cv2.imwrite("tmp.jpg", rotated)
 plt.imshow(rotated, cmap=plt.cm.gray)
 plt.show()
+
+
+def separate_words(line):
+    line_hist = cv2.reduce(line, 0, cv2.REDUCE_AVG).reshape(-1)
+    new_line = cv2.cvtColor(line, cv2.COLOR_GRAY2BGR)
+    line_peaks = peakdetect(line_hist, lookahead=80)
+    Hl, Wl = new_line.shape[:2]
+
+    for y in line_peaks[0]:
+        plt.plot(y[0], y[1], "r*")
+        cv2.line(new_line, (y[0], 0), (y[0], Hl), (255, 0, 0), 3)
+    for y in line_peaks[1]:
+        plt.plot(y[0], y[1], "g*")
+        cv2.line(new_line, (y[0], 0), (y[0], Hl), (0, 255, 0), 3)
+        # print(y)
+    plt.plot(line_hist)
+    plt.show()
+    return new_line
+
+
+y0 = 0
+for y in peaks[0]:
+    crop_img = s_img_2[y0:y[0], 0:W]
+    y0 = y[0]
+    crop_img = separate_words(crop_img)
+    plt.imshow(crop_img, cmap=plt.cm.gray)
+    plt.show()
+
+    if y[0] == peaks[0][-1][0]:
+        crop_img = s_img_2[y[0]:H, 0:W]
+        crop_img = separate_words(crop_img)
+        plt.imshow(crop_img, cmap=plt.cm.gray)
+        plt.show()
+        # print('last')
