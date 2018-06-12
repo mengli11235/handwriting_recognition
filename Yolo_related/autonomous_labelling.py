@@ -1,5 +1,6 @@
 import glob
 import os
+from shutil import copy
 
 import cv2
 from lxml import etree
@@ -7,6 +8,7 @@ from lxml import etree
 # set your working directory
 os.chdir('../../../')
 goal_dir = './Others/Annotation/'
+goal_img_dir = './Others/Characters/'
 source_dir = 'Others/monkbrill_171005/'
 
 for f in [x[0] for x in os.walk(source_dir)]:
@@ -15,6 +17,8 @@ for f in [x[0] for x in os.walk(source_dir)]:
 
     dirList = glob.glob(f + "/*.pgm")
     for d in dirList:
+        copy(d, goal_img_dir)
+
         image = cv2.imread(d)
         H, W = image.shape[:2]
 
@@ -78,4 +82,3 @@ for f in [x[0] for x in os.walk(source_dir)]:
         # print(etree.tostring(root, pretty_print=True, encoding='unicode'))
         with open(goal_dir + d.split('/')[-1].split('.')[0] + '.xml', 'w') as file:
             file.write(etree.tostring(root, pretty_print=True, encoding='unicode'))
-
