@@ -241,9 +241,37 @@ def rotate_max_area(image, angle):
     return rotated[y1:y2, x1:x2]
 
 
-rotated = rotate_max_area(rotated, -5)
-plt.imshow(rotated, cmap=plt.cm.gray)
-plt.show()
+def find_degree(image):
+    min_score = 999999
+    degree = 0
+
+    for d in range(-5, 6):
+        rotated_image = rotate_max_area(image, d)
+        ri_hist = cv2.reduce(rotated_image, 1, cv2.REDUCE_AVG).reshape(-1)
+        line_peaks = peakdetect(ri_hist, lookahead=30)
+        score = 0
+
+        for y in line_peaks[0]:
+            score -= (y[1] * 1)
+            print('-', y[1])
+        for y in line_peaks[1]:
+            score += (y[1] * 1)
+            print('+', y[1])
+
+        print("score: ", score, " degree: ", d)
+
+        if score < min_score:
+            degree = d
+            min_score = score
+
+    rotated_image = rotate_max_area(image, degree)
+    plt.imshow(rotated_image, cmap=plt.cm.gray)
+    plt.show()
+
+
+s2 = cv2.cvtColor(s_img_2, cv2.COLOR_GRAY2BGR)
+rotate_max_area(s2, 5)
+find_degree(s2)
 
 # def separate_words(line):
 #     line_hist = cv2.reduce(line, 0, cv2.REDUCE_AVG).reshape(-1)
