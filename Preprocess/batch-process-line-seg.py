@@ -1,11 +1,14 @@
 import glob
+import math
 import os
 
 import cv2
+import matplotlib.pyplot as plt
 import numpy as np
-import skimage.filters as sf
 from skimage import img_as_ubyte
 from skimage.filters import (threshold_sauvola)
+
+from Preprocess.tools.peakdetect import *
 
 # set your working directory
 os.chdir('../')
@@ -83,7 +86,100 @@ def threshold_li(image):
     return threshold + immin
 
 
+def rotatedRectWithMaxArea(w, h, angle):
+    """
+    Given a rectangle of size wxh that has been rotated by 'angle' (in
+    radians), computes the width and height of the largest possible
+    axis-aligned rectangle (maximal area) within the rotated rectangle.
+    """
+    if w <= 0 or h <= 0:
+        return 0, 0
+
+    width_is_longer = w >= h
+    side_long, side_short = (w, h) if width_is_longer else (h, w)
+
+    # since the solutions for angle, -angle and 180-angle are all the same,
+    # if suffices to look at the first quadrant and the absolute values of sin,cos:
+    sin_a, cos_a = abs(math.sin(angle)), abs(math.cos(angle))
+    if side_short <= 2. * sin_a * cos_a * side_long or abs(sin_a - cos_a) < 1e-10:
+        # half constrained case: two crop corners touch the longer side,
+        #   the other two corners are on the mid-line parallel to the longer line
+        x = 0.5 * side_short
+        wr, hr = (x / sin_a, x / cos_a) if width_is_longer else (x / cos_a, x / sin_a)
+    else:
+        # fully constrained case: crop touches all 4 sides
+        cos_2a = cos_a * cos_a - sin_a * sin_a
+        wr, hr = (w * cos_a - h * sin_a) / cos_2a, (h * cos_a - w * sin_a) / cos_2a
+
+    return wr, hr
+
+
+def rotate_bound(image, angle):
+    # CREDIT: https://www.pyimagesearch.com/2017/01/02/rotate-images-correctly-with-opencv-and-python/
+    (h, w) = image.shape[:2]
+    (cX, cY) = (w // 2, h // 2)
+    M = cv2.getRotationMatrix2D((cX, cY), -angle, 1.0)
+    cos = np.abs(M[0, 0])
+    sin = np.abs(M[0, 1])
+    nW = int((h * sin) + (w * cos))
+    nH = int((h * cos) + (w * sin))
+    M[0, 2] += (nW / 2) - cX
+    M[1, 2] += (nH / 2) - cY
+    return cv2.warpAffine(image, M, (nW, nH))
+
+
+def rotate_max_area(image, angle):
+    """ image: cv2 image matrix object
+        angle: in degree
+    """
+    wr, hr = rotatedRectWithMaxArea(image.shape[1], image.shape[0], math.radians(angle))
+    rotated = rotate_bound(image, angle)
+    h, w, _ = rotated.shape
+    y1 = h // 2 - int(hr / 2)
+    y2 = y1 + int(hr)
+    x1 = w // 2 - int(wr / 2)
+    x2 = x1 + int(wr)
+    return rotated[y1:y2, x1:x2]
+
+
+def find_degree(image):
+    min_score = 999999
+    degree = 0
+
+    for d in range(-6, 7):
+        rotated_image = rotate_max_area(image, d)
+        ri_hist = cv2.reduce(rotated_image, 1, cv2.REDUCE_AVG).reshape(-1)
+        # plt.plot(ri_hist)
+        # plt.show()
+
+        line_peaks = peakdetect(ri_hist, lookahead=30)
+        score_ne = num_ne = 0
+        score_po = num_po = 0
+
+        for y in line_peaks[0]:
+            score_ne -= (y[1] * 1)
+            num_ne += 1
+        for y in line_peaks[1]:
+            score_po += (y[1] * 1)
+            num_po += 1
+
+        score = score_ne / num_ne + score_po / num_po
+        print("score: ", score, " degree: ", d)
+        # print(": ", score_ne / num_ne, " : ", score_po / num_po)
+
+        if score < min_score:
+            degree = d
+            min_score = score
+
+    print('Degree: ', degree)
+    rotated_image = rotate_max_area(image, degree)
+    # plt.imshow(rotated_image, cmap=plt.cm.gray)
+    # plt.show()
+    return rotated_image
+
+
 dirList = glob.glob("Labels/*fused.jpg")
+# dirList = glob.glob("Labels/P564-Fg003-R-C01-R01-fused.jpg")
 for d in dirList:
     image = cv2.imread(d)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -139,40 +235,28 @@ for d in dirList:
     s_img_2 = img_as_ubyte(binary_sauvola)
     s_img_2[img3 == 255] = 255
 
-    hist = cv2.reduce(s_img_2, 1, cv2.REDUCE_AVG).reshape(-1)
+    new_img = cv2.cvtColor(s_img_2, cv2.COLOR_GRAY2BGR)
+    rotated = find_degree(new_img)
+    rotated = cv2.cvtColor(rotated, cv2.COLOR_RGB2GRAY)
 
-    th = 250
-    H, W = s_img_2.shape[:2]
-    uppers = [y for y in range(H - 1) if hist[y] <= th < hist[y + 1]]
-    lowers = [y for y in range(H - 1) if hist[y] > th >= hist[y + 1]]
+    hist = cv2.reduce(rotated, 1, cv2.REDUCE_AVG).reshape(-1)
+    H, W = rotated.shape[:2]
 
-    rotated = cv2.cvtColor(s_img_2, cv2.COLOR_GRAY2BGR)
-    # for y in uppers:
-    #     cv2.line(rotated, (0, y), (W, y), (255, 0, 0), 1)
-    #
-    # for y in lowers:
-    #     cv2.line(rotated, (0, y), (W, y), (0, 255, 0), 1)
-
-    import scipy.signal as ss
-    from Preprocess.tools.peakdetect import *
-
-    peaks = peakdetect(hist, lookahead=30)
+    peaks = peakdetect(hist, lookahead=40)
+    rotated = cv2.cvtColor(rotated, cv2.COLOR_GRAY2BGR)
 
     for y in peaks[0]:
-        # plt.plot(y[0], y[1], "r*")
+        plt.plot(y[0], y[1], "r*")
         cv2.line(rotated, (0, y[0]), (W, y[0]), (255, 0, 0), 3)
     for y in peaks[1]:
-        # plt.plot(y[0], y[1], "g*")
+        plt.plot(y[0], y[1], "g*")
         cv2.line(rotated, (0, y[0]), (W, y[0]), (0, 255, 0), 3)
-        print(y)
+
     # plt.plot(hist)
     # plt.show()
 
-    # indexes = ss.find_peaks_cwt(hist, np.arange(1, 300))
-    # for y in indexes:
-    #     cv2.line(rotated, (0, y), (W, y), (0, 255, 0), 1)
-    # print(indexes)
+    # plt.imshow(rotated, cmap=plt.cm.gray)
+    # plt.show()
 
-    cv2.imwrite(os.path.join('./Output/segmentation/', d.split('/')[-1]), rotated)
-
+    cv2.imwrite(os.path.join('./Output/segmentation/', d.split('/')[-1].split('jpg')[0] + '_r.jpg'), rotated)
     print("success")
