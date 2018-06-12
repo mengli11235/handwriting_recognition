@@ -245,25 +245,29 @@ def find_degree(image):
     min_score = 999999
     degree = 0
 
-    for d in range(-5, 6):
+    for d in range(-6, 7):
         rotated_image = rotate_max_area(image, d)
         ri_hist = cv2.reduce(rotated_image, 1, cv2.REDUCE_AVG).reshape(-1)
         line_peaks = peakdetect(ri_hist, lookahead=30)
-        score = 0
+        score_ne = num_ne = 0
+        score_po = num_po = 0
 
         for y in line_peaks[0]:
-            score -= (y[1] * 1)
-            print('-', y[1])
+            score_ne -= (y[1] * 1)
+            num_ne += 1
         for y in line_peaks[1]:
-            score += (y[1] * 1)
-            print('+', y[1])
+            score_po += (y[1] * 1)
+            num_po += 1
 
+        score = score_ne / num_ne + score_po / num_po
         print("score: ", score, " degree: ", d)
+        print(": ", score_ne / num_ne, " : ", score_po / num_po)
 
         if score < min_score:
             degree = d
             min_score = score
 
+    print(degree)
     rotated_image = rotate_max_area(image, degree)
     plt.imshow(rotated_image, cmap=plt.cm.gray)
     plt.show()
