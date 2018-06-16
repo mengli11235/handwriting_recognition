@@ -1,6 +1,6 @@
 import glob
 import os
-from shutil import copy
+from shutil import copyfile
 
 import cv2
 from lxml import etree
@@ -10,32 +10,36 @@ os.chdir('../../../')
 goal_dir = './Others/Annotation/'
 goal_img_dir = './Others/Characters/'
 source_dir = 'Others/monkbrill_171005/'
+print('Start process...')
 
 for f in [x[0] for x in os.walk(source_dir)]:
     c_name = f.split('/')[-1]
-    print('Start process ' + c_name)
+    print(c_name.replace('-', ''))
 
     dirList = glob.glob(f + "/*.pgm")
+    count = 0
     for d in dirList:
-        copy(d, goal_img_dir)
+        # copyfile(d, goal_img_dir + c_name.replace('-', '') + str(count) + '.pgm')
 
         image = cv2.imread(d)
         H, W = image.shape[:2]
+
+        cv2.imwrite(goal_img_dir + c_name.replace('-', '') + str(count) + '.jpg', image)
 
         # create XML
         root = etree.Element('annotation')
 
         # another child with text
         folder = etree.Element('folder')
-        folder.text = 'characters'
+        folder.text = 'Characters'
         root.append(folder)
 
         filename = etree.Element('filename')
-        filename.text = d.split('/')[-1]
+        filename.text = c_name.replace('-', '') + str(count) + '.pgm'
         root.append(filename)
 
         path = etree.Element('path')
-        path.text = '/' + d
+        path.text = '/' + c_name.replace('-', '') + str(count) + '.pgm'
         root.append(path)
 
         source = etree.Element('source')
@@ -58,7 +62,7 @@ for f in [x[0] for x in os.walk(source_dir)]:
 
         object = etree.Element('object')
         name = etree.SubElement(object, 'name')
-        name.text = c_name
+        name.text = c_name.replace('-', '')
         pose = etree.SubElement(object, 'pose')
         pose.text = 'Unspecified'
         truncated = etree.SubElement(object, 'truncated')
@@ -80,5 +84,7 @@ for f in [x[0] for x in os.walk(source_dir)]:
 
         # pretty string
         # print(etree.tostring(root, pretty_print=True, encoding='unicode'))
-        with open(goal_dir + d.split('/')[-1].split('.')[0] + '.xml', 'w') as file:
+        with open(goal_dir + c_name.replace('-', '') + str(count) + '.xml', 'w') as file:
             file.write(etree.tostring(root, pretty_print=True, encoding='unicode'))
+
+        count += 1
