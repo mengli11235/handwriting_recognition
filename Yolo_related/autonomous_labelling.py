@@ -35,11 +35,11 @@ for f in [x[0] for x in os.walk(source_dir)]:
         root.append(folder)
 
         filename = etree.Element('filename')
-        filename.text = c_name.replace('-', '') + str(count) + '.pgm'
+        filename.text = c_name.replace('-', '') + str(count) + '.jpg'
         root.append(filename)
 
         path = etree.Element('path')
-        path.text = '/' + c_name.replace('-', '') + str(count) + '.pgm'
+        path.text = '/' + c_name.replace('-', '') + str(count) + '.jpg'
         root.append(path)
 
         source = etree.Element('source')
