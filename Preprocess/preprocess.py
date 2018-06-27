@@ -10,9 +10,7 @@ from skimage.filters import *
 
 from Preprocess.tools.peakdetect import *
 
-# set your working directory
-os.chdir('../')
-dirList = glob.glob("Labels/*fused.jpg")
+dirList = glob.glob("../Labels/*fused.jpg")
 
 
 def threshold_li(image):
@@ -261,22 +259,42 @@ for d in dirList:
     H, W = rotated.shape[:2]
 
     peaks = peakdetect(hist, lookahead=40)
-    rotated = cv2.cvtColor(rotated, cv2.COLOR_GRAY2BGR)
-
-    for y in peaks[0]:
-        plt.plot(y[0], y[1], "r*")
-        cv2.line(rotated, (0, y[0]), (W, y[0]), (255, 0, 0), 3)
-    for y in peaks[1]:
-        plt.plot(y[0], y[1], "g*")
-        cv2.line(rotated, (0, y[0]), (W, y[0]), (0, 255, 0), 3)
+    # rotated = cv2.cvtColor(rotated, cv2.COLOR_GRAY2BGR)
+    #
+    # for y in peaks[0]:
+    #     plt.plot(y[0], y[1], "r*")
+    #     cv2.line(rotated, (0, y[0]), (W, y[0]), (255, 0, 0), 3)
+    # for y in peaks[1]:
+    #     plt.plot(y[0], y[1], "g*")
+    #     cv2.line(rotated, (0, y[0]), (W, y[0]), (0, 255, 0), 3)
 
     # plt.plot(hist)
     # plt.show()
 
-    # plt.imshow(rotated, cmap=plt.cm.gray)
+    plt.imshow(rotated, cmap=plt.cm.gray)
+    plt.show()
+
+    print(os.path.splitext(d.split('/')[-1])[0])
+    if not os.path.exists(os.path.splitext(d.split('/')[-1])[0]):
+        os.makedirs(os.path.splitext(d.split('/')[-1])[0])
+
+    print(rotated)
+
+    # if x < y:
+    #     if w < h:
+    #         crop = img[w:h, x:y]
+    #     else:
+    #         crop = img[h:w, x:y]
+    # else:
+    #     if w < h:
+    #         crop = img[w:h, y:x]
+    #     else:
+    #         crop = img[h:w, y:x]
+
+    # plt.imshow(crop, cmap=plt.cm.gray)
     # plt.show()
 
-    cv2.imwrite(os.path.join('./Output/segmentation/', d.split('/')[-1].split('jpg')[0] + '_t.jpg'), rotated)
+    cv2.imwrite(os.path.join('./Output/segmentation/', os.path.splitext(d.split('/')[-1])[0] + '_t.jpg'), rotated)
 
     y0 = 0
     for y in peaks[0]:
