@@ -4,6 +4,7 @@ import cv2
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import skimage.filters
 from skimage import img_as_ubyte
 from skimage.filters import threshold_sauvola
 
@@ -82,20 +83,46 @@ def threshold_li(image):
     return threshold + immin
 
 
-# image = cv2.imread('../Labels/seg_test.jpg')
-image = cv2.imread('../Labels/P564-Fg003-R-C01-R01-fused.jpg')
-image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+image = cv2.imread('../Labels/P632-Fg002-R-C01-R01-fused.jpg')
+# image = cv2.imread('../Labels/P583-Fg006-R-C01-R01-fused.jpg')
+# image = cv2.imread('../Labels/P25-Fg001.pgm')
+kernel = np.ones((5, 5), np.float32) / 25
+image = cv2.filter2D(image, -1, kernel)
+# image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-window_size = 29
+window_size = 51
 thresh_sauvola = threshold_sauvola(image, window_size=window_size, k=0.5)
 binary_sauvola = image > thresh_sauvola
-binary_global = image > threshold_li(image)
+# binary_global = image > threshold_li(image)
 # binary_global = image > sf.threshold_minimum(image)
 # binary_global = image > sf.threshold_li(image)
-# binary_global = image > threshold_otsu(image)
+# binary_global = image > skimage.filters.threshold_otsu(image)
+binary_global = image > skimage.filters.threshold_mean(image)
 
 cv_image = img_as_ubyte(binary_global)
 ret, labels = cv2.connectedComponents(cv_image)
+
+plt.imshow(binary_global, cmap=plt.cm.gray)
+plt.show()
+
+# image = 255 - image
+# plt.imshow(image, cmap=plt.cm.gray)
+# plt.show()
+# nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(image, connectivity=4)
+# sizes = stats[:, -1]
+# max_label = 1
+# max_size = sizes[1]
+# for i in range(2, nb_components):
+#     if sizes[i] > max_size:
+#         max_label = i
+#         max_size = sizes[i]
+# img2 = np.zeros(output.shape)
+# img2[output == max_label] = 255
+# cv2.imwrite('./tmp.jpg', img2)
+# tmp = cv2.imread('tmp.jpg')
+# im_bw = cv2.cvtColor(tmp, cv2.COLOR_RGB2GRAY)
+# plt.imshow(im_bw, cmap=plt.cm.gray)
+# plt.show()
 
 # Map component labels to hue val
 label_hue = np.uint8(179 * labels / np.max(labels))
@@ -107,6 +134,9 @@ labeled_img = cv2.cvtColor(labeled_img, cv2.COLOR_HSV2BGR)
 
 # set bg label to black
 labeled_img[label_hue == 0] = 0
+
+plt.imshow(cv_image, cmap=plt.cm.gray)
+plt.show()
 
 nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(cv_image, connectivity=4)
 sizes = stats[:, -1]
@@ -122,6 +152,10 @@ img2[output == max_label] = 255
 cv2.imwrite('./tmp.jpg', img2)
 tmp = cv2.imread('tmp.jpg')
 im_bw = cv2.cvtColor(tmp, cv2.COLOR_RGB2GRAY)
+
+plt.imshow(im_bw, cmap=plt.cm.gray)
+plt.show()
+
 im_bw = 255 - im_bw
 nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(im_bw, connectivity=4)
 sizes = stats[:, -1]
@@ -136,6 +170,7 @@ img3[output == max_label] = 255
 
 s_img_2 = img_as_ubyte(binary_sauvola)
 s_img_2[img3 == 255] = 255
+cv2.imwrite('./tmp.jpg', s_img_2)
 
 plt.imshow(s_img_2, cmap=plt.cm.gray)
 plt.show()
@@ -277,23 +312,24 @@ s2 = cv2.cvtColor(s_img_2, cv2.COLOR_GRAY2BGR)
 rotate_max_area(s2, 5)
 find_degree(s2)
 
-# def separate_words(line):
-#     line_hist = cv2.reduce(line, 0, cv2.REDUCE_AVG).reshape(-1)
-#     new_line = cv2.cvtColor(line, cv2.COLOR_GRAY2BGR)
-#     line_peaks = peakdetect(line_hist, lookahead=80)
-#     Hl, Wl = new_line.shape[:2]
-#
-#     for y in line_peaks[0]:
-#         plt.plot(y[0], y[1], "r*")
-#         cv2.line(new_line, (y[0], 0), (y[0], Hl), (255, 0, 0), 3)
-#     for y in line_peaks[1]:
-#         plt.plot(y[0], y[1], "g*")
-#         cv2.line(new_line, (y[0], 0), (y[0], Hl), (0, 255, 0), 3)
-#         # print(y)
-#     plt.plot(line_hist)
-#     plt.show()
-#     return new_line
-#
+
+def separate_words(line):
+    line_hist = cv2.reduce(line, 0, cv2.REDUCE_AVG).reshape(-1)
+    new_line = cv2.cvtColor(line, cv2.COLOR_GRAY2BGR)
+    line_peaks = peakdetect(line_hist, lookahead=20)
+    Hl, Wl = new_line.shape[:2]
+
+    for y in line_peaks[0]:
+        plt.plot(y[0], y[1], "r*")
+        cv2.line(new_line, (y[0], 0), (y[0], Hl), (255, 0, 0), 3)
+    for y in line_peaks[1]:
+        plt.plot(y[0], y[1], "g*")
+        # cv2.line(new_line, (y[0], 0), (y[0], Hl), (0, 255, 0), 3)
+        # print(y)
+    plt.plot(line_hist)
+    plt.show()
+    return new_line
+
 #
 # y0 = 0
 # for y in peaks[0]:

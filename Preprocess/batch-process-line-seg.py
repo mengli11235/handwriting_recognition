@@ -6,7 +6,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from skimage import img_as_ubyte
-from skimage.filters import (threshold_sauvola)
+from skimage.filters import *
 
 from Preprocess.tools.peakdetect import *
 
@@ -184,10 +184,11 @@ for d in dirList:
     image = cv2.imread(d)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    window_size = 29
+    window_size = 59
     thresh_sauvola = threshold_sauvola(image, window_size=window_size, k=0.5)
     binary_sauvola = image > thresh_sauvola
-    binary_global = image > threshold_li(image)
+    binary_global = image > threshold_triangle(image)
+    # binary_global = image > threshold_li(image)
     # binary_global = image > sf.threshold_minimum(image)
     # binary_global = image > sf.threshold_li(image)
     # binary_global = image > threshold_otsu(image)
@@ -258,5 +259,5 @@ for d in dirList:
     # plt.imshow(rotated, cmap=plt.cm.gray)
     # plt.show()
 
-    cv2.imwrite(os.path.join('./Output/segmentation/', d.split('/')[-1].split('jpg')[0] + '_r.jpg'), rotated)
+    cv2.imwrite(os.path.join('./Output/segmentation/', d.split('/')[-1].split('jpg')[0] + '_t.jpg'), rotated)
     print("success")
