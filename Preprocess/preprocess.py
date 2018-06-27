@@ -1,6 +1,7 @@
 import glob
 import math
 import os
+import shutil
 
 import cv2
 import matplotlib.pyplot as plt
@@ -188,11 +189,46 @@ def separate_words(line):
         cv2.line(new_line, (y[0], 0), (y[0], Hl), (255, 0, 0), 3)
     for y in line_peaks[1]:
         plt.plot(y[0], y[1], "g*")
-        # cv2.line(new_line, (y[0], 0), (y[0], Hl), (0, 255, 0), 3)
-        # print(y)
-    plt.plot(line_hist)
+        cv2.line(new_line, (y[0], 0), (y[0], Hl), (0, 255, 0), 3)
+
+    # plt.plot(new_line)
+    plt.imshow(new_line, cmap=plt.cm.gray)
     plt.show()
-    return new_line
+    return line_peaks
+
+
+def crop_blank(img):
+    min_x, max_x, min_y, max_y = 0, 0, 0, 0
+
+    # for line in img:
+    #     wl = True
+    #     for x in line:
+    #         if x != 255:
+    #             wl = False
+
+    th, threshed = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
+    pts = cv2.findNonZero(threshed)
+    ret = cv2.minAreaRect(pts)
+    (cx, cy), (w, h), ang = ret
+    if w < h:
+        crop = img[int(w):int(h), :]
+    else:
+        crop = img[int(h):int(w), :]
+
+    plt.imshow(crop, cmap=plt.cm.gray)
+    plt.show()
+
+    # if x < y:
+    #     if w < h:
+    #         crop = img[w:h, x:y]
+    #     else:
+    #         crop = img[h:w, x:y]
+    # else:
+    #     if w < h:
+    #         crop = img[w:h, y:x]
+    #     else:
+    #         crop = img[h:w, y:x]
+    #
 
 
 for d in dirList:
@@ -274,40 +310,64 @@ for d in dirList:
     plt.imshow(rotated, cmap=plt.cm.gray)
     plt.show()
 
-    print(os.path.splitext(d.split('/')[-1])[0])
     if not os.path.exists(os.path.splitext(d.split('/')[-1])[0]):
         os.makedirs(os.path.splitext(d.split('/')[-1])[0])
 
-    print(rotated)
-
-    # if x < y:
-    #     if w < h:
-    #         crop = img[w:h, x:y]
-    #     else:
-    #         crop = img[h:w, x:y]
-    # else:
-    #     if w < h:
-    #         crop = img[w:h, y:x]
-    #     else:
-    #         crop = img[h:w, y:x]
-
-    # plt.imshow(crop, cmap=plt.cm.gray)
-    # plt.show()
-
-    cv2.imwrite(os.path.join('./Output/segmentation/', os.path.splitext(d.split('/')[-1])[0] + '_t.jpg'), rotated)
+    # cv2.imwrite(os.path.join(os.path.splitext(d.split('/')[-1])[0], '_t.jpg'), rotated)
+    # crop_blank(rotated)
 
     y0 = 0
-    for y in peaks[0]:
+    count_line = 0
+    for y in peaks[1]:
+        if not os.path.exists(os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line))):
+            os.makedirs(os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line)))
+        else:
+            shutil.rmtree(os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line)))
+            os.makedirs(os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line)))
+        path = os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line))
+
         crop_img = s_img_2[y0:y[0], 0:W]
         y0 = y[0]
-        crop_img = separate_words(crop_img)
-        plt.imshow(crop_img, cmap=plt.cm.gray)
-        plt.show()
 
-        if y[0] == peaks[0][-1][0]:
+        line_peaks = separate_words(crop_img)
+        if len(line_peaks[1]) == 0:
+            continue
+
+        count_line += 1
+        # plt.imshow(crop_img, cmap=plt.cm.gray)
+        # plt.show()
+
+        x0 = 0
+        count_character = 0
+        for x in line_peaks[1]:
+            new_c = crop_img[:, x0: x[0]]
+            # print(os.path.join(path, str(count_character) + '.jpg'))
+            cv2.imwrite(os.path.join(path, str(count_character) + '.jpg'), new_c)
+            count_character += 1
+            x0 = x[0]
+
+            if x[0] == line_peaks[1][-1][0]:
+                new_c = crop_img[:, x[0]: W]
+                cv2.imwrite(os.path.join(path, str(count_character) + '.jpg'), new_c)
+                count_character += 1
+
+        if y[0] == peaks[1][-1][0]:
             crop_img = s_img_2[y[0]:H, 0:W]
-            crop_img = separate_words(crop_img)
-            plt.imshow(crop_img, cmap=plt.cm.gray)
-            plt.show()
+            line_peaks = separate_words(crop_img)
+
+            for x in line_peaks[1]:
+                new_c = crop_img[:, x0: x[0]]
+                # print(os.path.join(path, str(count_character) + '.jpg'))
+                cv2.imwrite(os.path.join(path, str(count_character) + '.jpg'), new_c)
+                count_character += 1
+                x0 = x[0]
+
+                if x[0] == line_peaks[1][-1][0]:
+                    new_c = crop_img[:, x[0]: W]
+                    cv2.imwrite(os.path.join(path, str(count_character) + '.jpg'), new_c)
+                    count_character += 1
+
+            # plt.imshow(crop_img, cmap=plt.cm.gray)
+            # plt.show()
 
     print("Successfully process image " + d.split('/')[-1].split('jpg')[0])
