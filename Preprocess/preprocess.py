@@ -178,7 +178,7 @@ def find_degree(image):
     return rotated_image
 
 
-def separate_words(line):
+def separate_cha(line):
     line_hist = cv2.reduce(line, 0, cv2.REDUCE_AVG).reshape(-1)
     new_line = cv2.cvtColor(line, cv2.COLOR_GRAY2BGR)
     line_peaks = peakdetect(line_hist, lookahead=20)
@@ -195,6 +195,30 @@ def separate_words(line):
     plt.imshow(new_line, cmap=plt.cm.gray)
     plt.show()
     return line_peaks
+
+
+def separate_words(line):
+    line_hist = cv2.reduce(line, 0, cv2.REDUCE_AVG).reshape(-1)
+    new_line = cv2.cvtColor(line, cv2.COLOR_GRAY2BGR)
+    line_peaks = peakdetect(line_hist, lookahead=20)
+    Hl, Wl = new_line.shape[:2]
+
+    words = []
+    for y in line_peaks[0]:
+        if y[1] == 255:
+            words.append(y)
+        plt.plot(y[0], y[1], "r*")
+        if y[1] == 255:
+            cv2.line(new_line, (y[0], 0), (y[0], Hl), (255, 0, 0), 3)
+    for y in line_peaks[1]:
+        plt.plot(y[0], y[1], "g*")
+        if y[1] == 255:
+            words.append(y)
+            cv2.line(new_line, (y[0], 0), (y[0], Hl), (0, 255, 0), 3)
+
+    # plt.imshow(new_line, cmap=plt.cm.gray)
+    # plt.show()
+    return words
 
 
 def crop_blank(img):
