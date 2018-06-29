@@ -336,6 +336,9 @@ for d in dirList:
 
     if not os.path.exists(os.path.splitext(d.split('/')[-1])[0]):
         os.makedirs(os.path.splitext(d.split('/')[-1])[0])
+    else:
+        shutil.rmtree(os.path.splitext(d.split('/')[-1])[0])
+        os.makedirs(os.path.splitext(d.split('/')[-1])[0])
 
     # cv2.imwrite(os.path.join(os.path.splitext(d.split('/')[-1])[0], '_t.jpg'), rotated)
     # crop_blank(rotated)
@@ -353,13 +356,20 @@ for d in dirList:
         crop_img = s_img_2[y0:y[0], 0:W]
         y0 = y[0]
 
-        line_peaks = separate_words(crop_img)
+        word_peaks = separate_words(crop_img)
         if len(line_peaks[1]) == 0:
             continue
 
         count_line += 1
         # plt.imshow(crop_img, cmap=plt.cm.gray)
         # plt.show()
+
+        # z0 = 0
+        # count_word = 0
+        # for z in word_peaks:
+        #     new_w = crop_img[:, z0: z[0]]
+        #     cv2.imwrite(os.path.join(path, str(count_character) + '.jpg'), new_c)
+
 
         x0 = 0
         count_character = 0
