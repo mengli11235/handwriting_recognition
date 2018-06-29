@@ -186,23 +186,18 @@ def separate_cha(line):
 
     cha = []
     for y in line_peaks[0]:
-        if y[1] == 255:
-            cha.append(y[0])
         plt.plot(y[0], y[1], "r*")
         cv2.line(new_line, (y[0], 0), (y[0], Hl), (255, 0, 0), 3)
     for y in line_peaks[1]:
-        if y[1] == 255:
-            cha.append(y[0])
+        cha.append(y[0])
         plt.plot(y[0], y[1], "g*")
         cv2.line(new_line, (y[0], 0), (y[0], Hl), (0, 255, 0), 3)
 
     cha.insert(0, 0)
     cha.append(Wl)
-    print(cha)
 
-    # plt.plot(new_line)
-    plt.imshow(new_line, cmap=plt.cm.gray)
-    plt.show()
+    # plt.imshow(new_line, cmap=plt.cm.gray)
+    # plt.show()
     return cha
 
 
@@ -368,7 +363,7 @@ for d in dirList:
         crop_img = s_img_2[y0:y[0], 0:W]
         y0 = y[0]
 
-        word_peaks = separate_cha(crop_img)
+        word_peaks = separate_words(crop_img)
         if len(word_peaks) == 0:
             continue
 
@@ -376,51 +371,28 @@ for d in dirList:
         # plt.imshow(crop_img, cmap=plt.cm.gray)
         # plt.show()
 
-        # z0 = 0
-        # count_word = 0
-        # for z in word_peaks:
-        #     new_w = crop_img[:, z0: z[0]]
-        #     os.makedirs(os.path.join(path, str(count_line) + 'word_' + str(count_word)))
-        #     count_word += 1
-        #     z0 = z[0]
-        #
-        #     if z[0] == word_peaks[-1][0]:
-        #         new_c = crop_img[:, x[0]: W]
-        #         cv2.imwrite(os.path.join(path, str(count_character) + '.jpg'), new_c)
-        #         count_character += 1
-        #
-        #
-        # x0 = 0
-        # count_character = 0
-        # for x in line_peaks[1]:
-        #     new_c = crop_img[:, x0: x[0]]
-        #     # print(os.path.join(path, str(count_character) + '.jpg'))
-        #     cv2.imwrite(os.path.join(path, str(count_character) + '.jpg'), new_c)
-        #     count_character += 1
-        #     x0 = x[0]
-        #
-        #     if x[0] == line_peaks[1][-1][0]:
-        #         new_c = crop_img[:, x[0]: W]
-        #         cv2.imwrite(os.path.join(path, str(count_character) + '.jpg'), new_c)
-        #         count_character += 1
-        #
-        # if y[0] == peaks[1][-1][0]:
-        #     crop_img = s_img_2[y[0]:H, 0:W]
-        #     line_peaks = separate_words(crop_img)
-        #
-        #     for x in line_peaks[1]:
-        #         new_c = crop_img[:, x0: x[0]]
-        #         # print(os.path.join(path, str(count_character) + '.jpg'))
-        #         cv2.imwrite(os.path.join(path, str(count_character) + '.jpg'), new_c)
-        #         count_character += 1
-        #         x0 = x[0]
-        #
-        #         if x[0] == line_peaks[1][-1][0]:
-        #             new_c = crop_img[:, x[0]: W]
-        #             cv2.imwrite(os.path.join(path, str(count_character) + '.jpg'), new_c)
-        #             count_character += 1
-        #
-        #     # plt.imshow(crop_img, cmap=plt.cm.gray)
-        #     # plt.show()
+        for i in range(len(word_peaks) - 1):
+            new_w = crop_img[:, word_peaks[i]: word_peaks[i + 1]]
+            os.makedirs(os.path.join(path, 'word_' + str(i)))
+
+            cha_peaks = separate_cha(new_w)
+            if len(cha_peaks) == 0:
+                continue
+
+            for j in range(len(cha_peaks) - 1):
+                new_c = new_w[:, cha_peaks[j]: cha_peaks[j + 1]]
+                cv2.imwrite(os.path.join(os.path.join(path, 'word_' + str(i)), str(j) + '.jpg'),
+                            new_c)
+
+        if y[0] == peaks[1][-1][0]:
+            crop_img = s_img_2[y[0]:H, 0:W]
+
+            word_peaks = separate_words(crop_img)
+            if len(word_peaks) == 0:
+                continue
+
+
+
+
 
     print("Successfully process image " + d.split('/')[-1].split('jpg')[0])
