@@ -11,7 +11,7 @@ from skimage.filters import *
 
 from Preprocess.tools.peakdetect import *
 
-dirList = glob.glob("../Labels/*fused.jpg")
+dirList = glob.glob('/Users/Khmer/Downloads/sample-test/run_test/*.pgm')
 
 
 def threshold_li(image):

@@ -14,7 +14,7 @@ def viterbi(obs):
     trans_p = prori_per_letter_prob
     emit_p = emission_prob
     states = priori_probs.keys()
-    print(states)
+    #print(states)
 
     V = [{}]
     for st in states:
@@ -29,8 +29,8 @@ def viterbi(obs):
                     max_prob = max_tr_prob * emit_p[st][obs[t]]
                     V[t][st] = {"prob": max_prob, "prev": prev_st}
                     break
-    for line in dptable(V):
-        print(line)
+    #for line in dptable(V):
+    #    print(line)
     opt = []
     # The highest probability
     max_prob = max(value["prob"] for value in V[-1].values())
@@ -46,7 +46,7 @@ def viterbi(obs):
         opt.insert(0, V[t + 1][previous]["prev"])
         previous = V[t + 1][previous]["prev"]
 
-    print ('The steps of states are ' + ' '.join(opt) + ' with highest probability of %s' % max_prob)
+    #print ('The steps of states are ' + ' '.join(opt) + ' with highest probability of %s' % max_prob)
     return(opt)
 
 def dptable(V):
