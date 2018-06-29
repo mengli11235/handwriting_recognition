@@ -12,6 +12,7 @@ from skimage.filters import *
 from Preprocess.tools.peakdetect import *
 
 dirList = glob.glob("../Labels/*fused.jpg")
+# dirList = glob.glob("../Labels/P168-Fg016-R-C01-R01-fused.jpg")
 
 
 def threshold_li(image):
@@ -178,24 +179,52 @@ def find_degree(image):
     return rotated_image
 
 
-def separate_cha(line):
+def separate_cha_2(line):
     line_hist = cv2.reduce(line, 0, cv2.REDUCE_AVG).reshape(-1)
     new_line = cv2.cvtColor(line, cv2.COLOR_GRAY2BGR)
     line_peaks = peakdetect(line_hist, lookahead=20)
     Hl, Wl = new_line.shape[:2]
 
     cha = []
-    for y in line_peaks[0]:
-        plt.plot(y[0], y[1], "r*")
-        cv2.line(new_line, (y[0], 0), (y[0], Hl), (255, 0, 0), 3)
+    # for y in line_peaks[0]:
+    # plt.plot(y[0], y[1], "r*")
+    # cv2.line(new_line, (y[0], 0), (y[0], Hl), (255, 0, 0), 3)
+
     for y in line_peaks[1]:
         cha.append(y[0])
+        # plt.plot(y[0], y[1], "g*")
+        cv2.line(new_line, (y[0], 0), (y[0], Hl), (0, 255, 0), 3)
+
+    cha.insert(0, 0)
+    cha.append(Wl)
+
+    plt.imshow(new_line, cmap=plt.cm.gray)
+    plt.show()
+    return cha
+
+
+def separate_cha(line):
+    line_hist = cv2.reduce(line, 0, cv2.REDUCE_AVG).reshape(-1)
+    new_line = cv2.cvtColor(line, cv2.COLOR_GRAY2BGR)
+    line_peaks = peakdetect(line_hist, lookahead=25)
+    Hl, Wl = new_line.shape[:2]
+
+    cha = []
+    # for y in line_peaks[0]:
+    # plt.plot(y[0], y[1], "r*")
+    # cv2.line(new_line, (y[0], 0), (y[0], Hl), (255, 0, 0), 3)
+
+    for y in line_peaks[0]:
+        if y[1] >= 235:
+            cha.append(y[0])
         plt.plot(y[0], y[1], "g*")
         cv2.line(new_line, (y[0], 0), (y[0], Hl), (0, 255, 0), 3)
 
     cha.insert(0, 0)
     cha.append(Wl)
 
+    # plt.plot(line_hist)
+    # plt.show()
     # plt.imshow(new_line, cmap=plt.cm.gray)
     # plt.show()
     return cha
@@ -220,11 +249,11 @@ def separate_words(line):
             words.append(y[0])
             cv2.line(new_line, (y[0], 0), (y[0], Hl), (0, 255, 0), 3)
 
-    words.insert(0, 0)
-    words.append(Wl)
+    # words.insert(0, 0)
+    # words.append(Wl)
 
-    plt.imshow(new_line, cmap=plt.cm.gray)
-    plt.show()
+    # plt.imshow(new_line, cmap=plt.cm.gray)
+    # plt.show()
     return words
 
 
@@ -326,20 +355,28 @@ for d in dirList:
     H, W = rotated.shape[:2]
 
     peaks = peakdetect(hist, lookahead=40)
-    # rotated = cv2.cvtColor(rotated, cv2.COLOR_GRAY2BGR)
-    #
-    # for y in peaks[0]:
-    #     plt.plot(y[0], y[1], "r*")
-    #     cv2.line(rotated, (0, y[0]), (W, y[0]), (255, 0, 0), 3)
-    # for y in peaks[1]:
-    #     plt.plot(y[0], y[1], "g*")
-    #     cv2.line(rotated, (0, y[0]), (W, y[0]), (0, 255, 0), 3)
+    rotated = cv2.cvtColor(rotated, cv2.COLOR_GRAY2BGR)
+
+    peak = []
+    for y in peaks[0]:
+        peak.append(y[0])
+        plt.plot(y[0], y[1], "r*")
+        cv2.line(rotated, (0, y[0]), (W, y[0]), (255, 0, 0), 3)
+    for y in peaks[1]:
+        peak.append(y[0])
+        plt.plot(y[0], y[1], "g*")
+        cv2.line(rotated, (0, y[0]), (W, y[0]), (0, 255, 0), 3)
+
+    peak.insert(0, 0)
+    peak.append(W)
+
+    print(peak)
 
     # plt.plot(hist)
     # plt.show()
-
-    plt.imshow(rotated, cmap=plt.cm.gray)
-    plt.show()
+    #
+    # plt.imshow(rotated, cmap=plt.cm.gray)
+    # plt.show()
 
     if not os.path.exists(os.path.splitext(d.split('/')[-1])[0]):
         os.makedirs(os.path.splitext(d.split('/')[-1])[0])
@@ -386,13 +423,23 @@ for d in dirList:
 
         if y[0] == peaks[1][-1][0]:
             crop_img = s_img_2[y[0]:H, 0:W]
+            path = os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line))
 
             word_peaks = separate_words(crop_img)
             if len(word_peaks) == 0:
                 continue
 
+            for i in range(len(word_peaks) - 1):
+                new_w = crop_img[:, word_peaks[i]: word_peaks[i + 1]]
+                os.makedirs(os.path.join(path, 'word_' + str(i)))
 
+                cha_peaks = separate_cha(new_w)
+                if len(cha_peaks) == 0:
+                    continue
 
-
+                for j in range(len(cha_peaks) - 1):
+                    new_c = new_w[:, cha_peaks[j]: cha_peaks[j + 1]]
+                    cv2.imwrite(os.path.join(os.path.join(path, 'word_' + str(i)), str(j) + '.jpg'),
+                                new_c)
 
     print("Successfully process image " + d.split('/')[-1].split('jpg')[0])
