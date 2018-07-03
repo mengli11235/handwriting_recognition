@@ -41,7 +41,7 @@ class Network:
 
         self.num_class = 27
 
-        self.learning_rate = 5e-5
+        self.learning_rate = 1e-5
         #1e-5 = 59%
 
 
@@ -84,7 +84,7 @@ class Network:
         W_conv1 = weight_variable([self.rf_1, self.rf_1, self.nin_1, self.nf_1])
         b_conv1 = bias_variable([self.nf_1])
 
-        h_conv1 = tf.nn.leaky_relu(conv2d(x_image, W_conv1) + b_conv1)
+        h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
         h_pool1 = max_pool_2x2(h_conv1)
 
         # Convolutional layer 2
@@ -137,7 +137,7 @@ class Network:
         cross_entropy = tf.reduce_mean(-tf.reduce_sum(self.y_ * tf.log(self.y), reduction_indices=[1]))
         l2 = 0.00001 * (tf.nn.l2_loss(W_fc2) + tf.nn.l2_loss(W_fc1) + tf.nn.l2_loss(W_conv1) + tf.nn.l2_loss(W_conv2))
         loss = cross_entropy + l2
-        self.CE = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y_, logits=out) + l2
+        self.CE = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y_, logits=out)
         #self.print_1 = tf.Print(tf.argmax(self.y, 1),[tf.argmax(self.y, 1)], summarize=30, message="y")
         #self.print_2 = tf.Print(tf.argmax(self.y_, 1),[tf.argmax(self.y_, 1)], summarize=30, message="y_")
 
