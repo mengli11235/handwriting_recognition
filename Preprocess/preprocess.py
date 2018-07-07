@@ -13,7 +13,8 @@ from Preprocess.tools.peakdetect import *
 
 # dirList = glob.glob("../Labels/*fused.jpg")
 # dirList = glob.glob("../Labels/P168-Fg016-R-C01-R01-fused.jpg")
-dirList = glob.glob('/Users/Khmer/Downloads/sample-test/run_test/*.pgm')
+dirList = glob.glob("../Labels/P846-Fg001-R-C01-R01-fused.jpg")
+# dirList = glob.glob('/Users/Khmer/Downloads/sample-test/run_test/*.pgm')
 
 
 def threshold_li(image):
@@ -150,8 +151,12 @@ def find_degree(image):
 
     for d in range(-6, 7):
         rotated_image = rotate_max_area(image, d)
+        # cv2.imwrite('./tr_' + str(d) + '.jpg', rotated_image)
         ri_hist = cv2.reduce(rotated_image, 1, cv2.REDUCE_AVG).reshape(-1)
+
         # plt.plot(ri_hist)
+        # plt.savefig('./tr_' + str(d) + '_h.jpg')
+        # plt.clf()
         # plt.show()
 
         line_peaks = peakdetect(ri_hist, lookahead=30)
@@ -319,6 +324,8 @@ for d in dirList:
     # set bg label to black
     labeled_img[label_hue == 0] = 0
 
+    # cv2.imwrite('./t1.jpg', cv_image)
+
     nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(cv_image, connectivity=4)
     sizes = stats[:, -1]
     max_label = 1
@@ -329,6 +336,8 @@ for d in dirList:
             max_size = sizes[i]
     img2 = np.zeros(output.shape)
     img2[output == max_label] = 255
+
+    # cv2.imwrite('./t2.jpg', img2)
 
     cv2.imwrite('./tmp.jpg', img2)
     tmp = cv2.imread('tmp.jpg')
@@ -345,8 +354,15 @@ for d in dirList:
     img3 = np.zeros(output.shape)
     img3[output == max_label] = 255
 
+    # cv2.imwrite('./t3.jpg', img3)
+
     s_img_2 = img_as_ubyte(binary_sauvola)
+
+    # cv2.imwrite('./t1_2.jpg', s_img_2)
+
     s_img_2[img3 == 255] = 255
+
+    # cv2.imwrite('./t4.jpg', s_img_2)
 
     new_img = cv2.cvtColor(s_img_2, cv2.COLOR_GRAY2BGR)
     rotated = find_degree(new_img)

@@ -11,22 +11,22 @@ LOAD_CHECKPOINT_DIR = "./csv/26-06-2018_01-14-43/"
 
 def read_data(DATADIR):
     labels = os.listdir(DATADIR)
-    #print(labels)
+    # print(labels)
     testData = []
     list = os.listdir(DATADIR)
     if list[0] == '.DS_Store':
         list.pop(0)  # pop .DSstore
-        #print(' Deleted DSstore -+-+-++-+-+-+')
+        # print(' Deleted DSstore -+-+-++-+-+-+')
     for x in list:  # 1 iter
         im = x
         image = cv2.imread(DATADIR + '/' + im, 0)
         currentData = preprocess(image)
         testData.append(currentData)
-    return(testData)
+    return (testData)
+
 
 def recognition(path_data, path_output):
-
-    #Load pickles
+    # Load pickles
     with open('././pickle/OneHotLabelsDict.pkl', 'rb') as f:
         OneHotLabels = pickle.load(f)
 
@@ -35,36 +35,35 @@ def recognition(path_data, path_output):
         NumberDict[np.argmax(OneHotLabels[key])] = key
 
     with open('./pickle/NumberDict.pkl', 'rb') as f:
-        NumberDict= pickle.load(f)
+        NumberDict = pickle.load(f)
     network = Network()
     network.loadNetwork(LOAD_CHECKPOINT_DIR)
 
-    #Read all letters
+    # Read all letters
     lines = os.listdir(path_data)
     if lines[0] == '.DS_Store':
         lines.pop(0)  # pop .DSstore
-        #print(' Deleted DSstore -+-+-++-+-+-+')
+        # print(' Deleted DSstore -+-+-++-+-+-+')
     lines.reverse()
     name_output = path_data.split('/')
     name_output.reverse()
-    #print('name_output' + '.txt',name_output[0])
-    output_txt = open(path_output+'/' +name_output[0]+'.txt','w')
+    # print('name_output' + '.txt',name_output[0])
+    output_txt = open(path_output + '/' + name_output[0] + '.txt', 'w')
     for line in lines:
         line_result = []
         words = os.listdir(path_data + '/' + line)
         if words[0] == '.DS_Store':
             words.pop(0)  # pop .DSstore
-            #print(' Deleted DSstore -+-+-++-+-+-+')
+            # print(' Deleted DSstore -+-+-++-+-+-+')
         words.reverse()
 
         for word in words:
-            testData = read_data(path_data + '/' + line + '/' + word )
+            testData = read_data(path_data + '/' + line + '/' + word)
             testData.reverse()
             word_result = []
 
             for i in range(len(testData)):
                 word_result.append(NumberDict[np.argmax(network.feed_batch(testData[i]))])
-
 
             word_result = viterbi((word_result))
             line_result.append(word_result)
@@ -77,13 +76,12 @@ def recognition(path_data, path_output):
                     output_txt.write(word_write + '-')
             output_txt.write(" ")
         output_txt.write("\n")
-        #print(line_result, line)
-    print('Recognition done for image' +name_output[0])
+        # print(line_result, line)
+    print('Recognition done for image' + name_output[0])
     output_txt.close()
-
 
 
 if __name__ == '__main__':
     DIR_DATA = "/Users/Khmer/Developer/handwriting_recognition/Preprocess/P25-Fg001"
-    DIR_OUTPUT= "/Users/Khmer/Developer/handwriting_recognition"
+    DIR_OUTPUT = "/Users/Khmer/Developer/handwriting_recognition"
     recognition(DIR_DATA, DIR_OUTPUT)
