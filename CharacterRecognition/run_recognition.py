@@ -29,7 +29,7 @@ def read_data(DATADIR):
     return (testData)
 
 
-def recognition(path_data, path_output):
+def recognition(path_data, path_output, net):
     # Load pickles
     with open('./CharacterRecognition/pickle/OneHotLabelsDict.pkl', 'rb') as f:
         OneHotLabels = pickle.load(f)
@@ -40,8 +40,12 @@ def recognition(path_data, path_output):
 
     with open('./CharacterRecognition/pickle/NumberDict.pkl', 'rb') as f:
         NumberDict = pickle.load(f)
-    network = Network()
-    network.loadNetwork(LOAD_CHECKPOINT_DIR)
+
+    if net == -1:
+        network = Network()
+        network.loadNetwork(LOAD_CHECKPOINT_DIR)
+    else:
+        network = net
 
     # Read all letters
     lines = os.listdir(path_data)
@@ -84,12 +88,13 @@ def recognition(path_data, path_output):
         # print(line_result, line)
     print('Recognition done for image' + name_output[0])
     output_txt.close()
+    return network
 
 
 if __name__ == '__main__':
     DIR_OUTPUT = "./"
-    # for folder in [name for name in os.listdir("./segmentation/") if os.path.isdir('./segmentation/' + name)]:
-    DIR_DATA = "./segmentation/" + 'P25-Fg001'
-    recognition(DIR_DATA, DIR_OUTPUT)
-    import time
-    time.sleep(5)
+    network = -1
+
+    for folder in [name for name in os.listdir("./segmentation/") if os.path.isdir('./segmentation/' + name)]:
+        DIR_DATA = "./segmentation/" + folder
+        network = recognition(DIR_DATA, DIR_OUTPUT, network)
