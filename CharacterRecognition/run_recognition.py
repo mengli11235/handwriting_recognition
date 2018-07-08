@@ -11,8 +11,7 @@ from network_5 import Network
 from Viterbi import viterbi
 import pickle
 
-LOAD_CHECKPOINT_DIR = "./csv/26-06-2018_01-14-43/"
-
+LOAD_CHECKPOINT_DIR = "./CharacterRecognition/csv/26-06-2018_01-14-43/"
 
 def read_data(DATADIR):
     labels = os.listdir(DATADIR)
@@ -32,14 +31,14 @@ def read_data(DATADIR):
 
 def recognition(path_data, path_output):
     # Load pickles
-    with open('././pickle/OneHotLabelsDict.pkl', 'rb') as f:
+    with open('./CharacterRecognition/pickle/OneHotLabelsDict.pkl', 'rb') as f:
         OneHotLabels = pickle.load(f)
 
     NumberDict = {}
     for key in OneHotLabels:
         NumberDict[np.argmax(OneHotLabels[key])] = key
 
-    with open('./pickle/NumberDict.pkl', 'rb') as f:
+    with open('./CharacterRecognition/pickle/NumberDict.pkl', 'rb') as f:
         NumberDict = pickle.load(f)
     network = Network()
     network.loadNetwork(LOAD_CHECKPOINT_DIR)
@@ -88,6 +87,6 @@ def recognition(path_data, path_output):
 
 
 if __name__ == '__main__':
-    DIR_DATA = "./../P123-Fg002-R-C01-R01-fused"
+    DIR_DATA = "./segmentation/P123-Fg002-R-C01-R01-fused"
     DIR_OUTPUT = "./"
     recognition(DIR_DATA, DIR_OUTPUT)
