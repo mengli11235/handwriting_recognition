@@ -11,10 +11,10 @@ from skimage.filters import *
 
 from Preprocess.tools.peakdetect import *
 
-dirList = glob.glob("../Labels/*fused.jpg")
+# dirList = glob.glob("../Labels/*fused.jpg")
+dirList = glob.glob("../Labels/P168-Fg016-R-C01-R01-fused.jpg")
 
 
-# dirList = glob.glob("../Labels/P168-Fg016-R-C01-R01-fused.jpg")
 # dirList = glob.glob("../Labels/P123-Fg002-R-C01-R01-fused.jpg")
 # dirList = glob.glob('/Users/Khmer/Downloads/sample-test/run_test/*.pgm')
 
@@ -241,7 +241,7 @@ def separate_cha(line):
 def separate_words(line):
     line_hist = cv2.reduce(line, 0, cv2.REDUCE_AVG).reshape(-1)
     new_line = cv2.cvtColor(line, cv2.COLOR_GRAY2BGR)
-    line_peaks = peakdetect(line_hist, lookahead=20)
+    line_peaks = peakdetect(line_hist, lookahead=40)
     Hl, Wl = new_line.shape[:2]
 
     words = []
@@ -251,17 +251,17 @@ def separate_words(line):
         # plt.plot(y[0], y[1], "r*")
         if y[1] == 255:
             cv2.line(new_line, (y[0], 0), (y[0], Hl), (255, 0, 0), 3)
-    for y in line_peaks[1]:
-        # plt.plot(y[0], y[1], "g*")
-        if y[1] == 255:
-            words.append(y[0])
-            cv2.line(new_line, (y[0], 0), (y[0], Hl), (0, 255, 0), 3)
+    # for y in line_peaks[1]:
+    # plt.plot(y[0], y[1], "g*")
+    # if y[1] == 255:
+    #     words.append(y[0])
+    #     cv2.line(new_line, (y[0], 0), (y[0], Hl), (0, 255, 0), 3)
 
     # words.insert(0, 0)
     # words.append(Wl)
 
-    # plt.imshow(new_line, cmap=plt.cm.gray)
-    # plt.show()
+    plt.imshow(new_line, cmap=plt.cm.gray)
+    plt.show()
     return words
 
 
@@ -381,10 +381,10 @@ for d in dirList:
         peak.append(y[0])
         # plt.plot(y[0], y[1], "r*")
         cv2.line(rotated, (0, y[0]), (W, y[0]), (255, 0, 0), 3)
-    for y in peaks[1]:
-        peak.append(y[0])
-        # plt.plot(y[0], y[1], "g*")
-        # cv2.line(rotated, (0, y[0]), (W, y[0]), (0, 255, 0), 3)
+    # for y in peaks[1]:
+    # peak.append(y[0])
+    # plt.plot(y[0], y[1], "g*")
+    # cv2.line(rotated, (0, y[0]), (W, y[0]), (0, 255, 0), 3)
 
     # plt.plot(hist)
     # plt.savefig('hist.jpg')
@@ -407,9 +407,8 @@ for d in dirList:
     # cv2.imwrite(os.path.join(os.path.splitext(d.split('/')[-1])[0], '_t.jpg'), rotated)
     # crop_blank(rotated)
 
-    y0 = 0
     count_line = 0
-    for y in peaks[0]:
+    for y in range(len(peak) - 1):
         if not os.path.exists(os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line))):
             os.makedirs(os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line)))
         else:
@@ -417,7 +416,7 @@ for d in dirList:
             os.makedirs(os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line)))
         path = os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line))
 
-        crop_img = s_img_2[y0:y[0], 0:W]
+        crop_img = s_img_2[peak[y]:peak[y + 1], 0:W]
 
         word_peaks = separate_words(crop_img)
         if len(word_peaks) == 0:
@@ -431,7 +430,7 @@ for d in dirList:
             new_w = crop_img[:, word_peaks[i]: word_peaks[i + 1]]
             os.makedirs(os.path.join(path, 'word_' + str(i)))
 
-            cv2.line(rotated, (word_peaks[i], y0), (word_peaks[i], y[0]), (0, 0, 255), 3)
+            cv2.line(rotated, (word_peaks[i], peak[y]), (word_peaks[i], peak[y + 1]), (0, 0, 255), 3)
             # print(y0, y[0], word_peaks[i])
 
             cha_peaks = separate_cha(new_w)
@@ -442,29 +441,6 @@ for d in dirList:
                 new_c = new_w[:, cha_peaks[j]: cha_peaks[j + 1]]
                 cv2.imwrite(os.path.join(os.path.join(path, 'word_' + str(i)), str(j) + '.jpg'),
                             new_c)
-
-        if y[0] == peaks[1][-1][0]:
-            crop_img = s_img_2[y[0]:H, 0:W]
-            path = os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line))
-
-            word_peaks = separate_words(crop_img)
-            if len(word_peaks) == 0:
-                continue
-
-            for i in range(len(word_peaks) - 1):
-                new_w = crop_img[:, word_peaks[i]: word_peaks[i + 1]]
-                os.makedirs(os.path.join(path, 'word_' + str(i)))
-
-                cha_peaks = separate_cha(new_w)
-                if len(cha_peaks) == 0:
-                    continue
-
-                for j in range(len(cha_peaks) - 1):
-                    new_c = new_w[:, cha_peaks[j]: cha_peaks[j + 1]]
-                    cv2.imwrite(os.path.join(os.path.join(path, 'word_' + str(i)), str(j) + '.jpg'),
-                                new_c)
-
-        y0 = y[0]
 
     plt.imshow(rotated, cmap=plt.cm.gray)
     plt.show()
