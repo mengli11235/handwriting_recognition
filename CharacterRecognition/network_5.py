@@ -41,7 +41,7 @@ class Network:
 
         self.num_class = 27
 
-        self.learning_rate = 1e-5
+        self.learning_rate = 1e-4
         #1e-5 = 59%
 
 
@@ -84,14 +84,14 @@ class Network:
         W_conv1 = weight_variable([self.rf_1, self.rf_1, self.nin_1, self.nf_1])
         b_conv1 = bias_variable([self.nf_1])
 
-        h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
+        h_conv1 = tf.nn.leaky_relu(conv2d(x_image, W_conv1) + b_conv1,alpha=0.1)
         h_pool1 = max_pool_2x2(h_conv1)
 
         # Convolutional layer 2
         W_conv2 = weight_variable([self.rf_2, self.rf_2, self.nf_1, self.nf_2])
         b_conv2 = bias_variable([self.nf_2])
 
-        h_conv2 =tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
+        h_conv2 =tf.nn.leaky_relu(conv2d(h_pool1, W_conv2) + b_conv2,alpha=0.1)
         h_pool2 = max_pool_2x2(h_conv2)
 
         self.keep_prob = tf.placeholder(tf.float32)
@@ -100,18 +100,18 @@ class Network:
         W_conv3 = weight_variable([self.rf_3, self.rf_3, self.nf_2, self.nf_3])
         b_conv3 = bias_variable([self.nf_3])
 
-        h_conv3 = tf.nn.relu(conv2d(h_pool2, W_conv3) + b_conv3)
+        h_conv3 = tf.nn.leaky_relu(conv2d(h_pool2, W_conv3) + b_conv3,alpha=0.1)
         h_pool3 = max_pool_2x2(h_conv3)
         # Convolution layer 4
         W_conv4 = weight_variable([self.rf_4, self.rf_4, self.nf_3, self.nf_4])
         b_conv4 = bias_variable([self.nf_4])
 
-        h_conv4 = tf.nn.relu(conv2d(h_pool3, W_conv4) + b_conv4)
+        h_conv4 = tf.nn.leaky_relu(conv2d(h_pool3, W_conv4) + b_conv4,alpha=0.1)
         h_pool4 = max_pool_2x2(h_conv4)
         # Convolution layer 5
         W_conv5 = weight_variable([self.rf_5, self.rf_5, self.nf_4, self.nf_5])
         b_conv5 = bias_variable([self.nf_5])
-        h_conv5 = tf.nn.relu(conv2d(h_pool4, W_conv5) + b_conv5)
+        h_conv5 = tf.nn.leaky_relu(conv2d(h_pool4, W_conv5) + b_conv5,alpha=0.1)
         h_pool5 = max_pool_3x3(h_conv5)
 
         # Fully connected layer 1
@@ -120,7 +120,7 @@ class Network:
         W_fc1 = weight_variable([int(self.cnn_fc), self.fc_1])
         b_fc1 = bias_variable([self.fc_1])
 
-        h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
+        h_fc1 = tf.nn.leaky_relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1,alpha=0.1)
 
         # Dropout
 
@@ -136,8 +136,7 @@ class Network:
         # Evaluation functions
         cross_entropy = tf.reduce_mean(-tf.reduce_sum(self.y_ * tf.log(self.y), reduction_indices=[1]))
         l2 = 0.00001 * (tf.nn.l2_loss(W_fc2) + tf.nn.l2_loss(W_fc1) + tf.nn.l2_loss(W_conv1) + tf.nn.l2_loss(W_conv2))
-        loss = cross_entropy + l2
-        self.CE = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y_, logits=out)
+        self.CE = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y_, logits=out) + l2
         #self.print_1 = tf.Print(tf.argmax(self.y, 1),[tf.argmax(self.y, 1)], summarize=30, message="y")
         #self.print_2 = tf.Print(tf.argmax(self.y_, 1),[tf.argmax(self.y_, 1)], summarize=30, message="y_")
 

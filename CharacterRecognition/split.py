@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 from preprocess import preprocess, oneHot
 
-DATADIR = "/Users/Khmer/Developer/HWR2018/CharacterRecognition/monkbrill_171005_jpg_data_augmented/"
+DATADIR = "/Users/Khmer/Developer/HWR2018/CharacterRecognition/monkbrill_171005_jpg_data_augmented_50000_rnd_erasing/"
 NPY_STORAGE =  "/Users/Khmer/Developer/HWR2018/CharacterRecognition/numpy/"
 imHeight = 48
 imWidht = 48
@@ -98,7 +98,7 @@ print(testLabels)
 print("traindatashape: ", trainData.shape)
 trainData, trainLabels = shuffle_in_unison(trainData, trainLabels)
 testData, testLabels = shuffle_in_unison(testData, testLabels)
-np.save(NPY_STORAGE + "trainData", trainData)
-np.save(NPY_STORAGE + "trainLabels", trainLabels)
-np.save(NPY_STORAGE + "testData", testData)
-np.save(NPY_STORAGE + "testLabels", testLabels)
+np.save(NPY_STORAGE + "trainData_rnd_erasing", trainData)
+np.save(NPY_STORAGE + "trainLabels_rnd_erasing", trainLabels)
+#np.save(NPY_STORAGE + "testData", testData)
+#np.save(NPY_STORAGE + "testLabels", testLabels)
