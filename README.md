@@ -8,15 +8,15 @@ Project for course handwriting recognition
 
 2. (Optional) Input the correct path and suffix in Preprocess/preprocess.py
 
-3. Run the code below using Python 3
+3. Run the command below using Python 3; if you see 'Successfully process image xxx', which means the command is successful
 
     ```
     python3 Preprocess/preprocess.py
     ```
-
-4. djsakldj
+    
+5. Run the command below using Python 3
     ```
-    djsad
+    python3 CharacterRecognition/run_recognition.py
     ```
     
-5. 212 
+6. Check the text files
