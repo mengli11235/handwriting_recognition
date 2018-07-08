@@ -1,6 +1,11 @@
+#!/usr/bin/env python
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
+
 import numpy as np
 import cv2
-import os
 from preprocess import preprocess
 from network_5 import Network
 from Viterbi import viterbi
@@ -66,7 +71,7 @@ def recognition(path_data, path_output):
             for i in range(len(testData)):
                 word_result.append(NumberDict[np.argmax(network.feed_batch(testData[i]))])
 
-            word_result = viterbi((word_result))
+            # word_result = viterbi((word_result))
             line_result.append(word_result)
 
         for line_write in line_result:
@@ -83,6 +88,6 @@ def recognition(path_data, path_output):
 
 
 if __name__ == '__main__':
-    DIR_DATA = "../Preprocess/P123-Fg002-R-C01-R01-fused"
+    DIR_DATA = "./../P123-Fg002-R-C01-R01-fused"
     DIR_OUTPUT = "./"
     recognition(DIR_DATA, DIR_OUTPUT)
