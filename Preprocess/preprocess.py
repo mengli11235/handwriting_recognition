@@ -12,6 +12,8 @@ from skimage.filters import *
 from Preprocess.tools.peakdetect import *
 
 dirList = glob.glob("../Labels/*fused.jpg")
+
+
 # dirList = glob.glob("../Labels/P168-Fg016-R-C01-R01-fused.jpg")
 # dirList = glob.glob("../Labels/P123-Fg002-R-C01-R01-fused.jpg")
 # dirList = glob.glob('/Users/Khmer/Downloads/sample-test/run_test/*.pgm')
@@ -396,9 +398,6 @@ for d in dirList:
     # plt.plot(hist)
     # plt.show()
 
-    plt.imshow(rotated, cmap=plt.cm.gray)
-    plt.show()
-
     if not os.path.exists(os.path.splitext(d.split('/')[-1])[0]):
         os.makedirs(os.path.splitext(d.split('/')[-1])[0])
     else:
@@ -419,7 +418,6 @@ for d in dirList:
         path = os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line))
 
         crop_img = s_img_2[y0:y[0], 0:W]
-        y0 = y[0]
 
         word_peaks = separate_words(crop_img)
         if len(word_peaks) == 0:
@@ -432,6 +430,9 @@ for d in dirList:
         for i in range(len(word_peaks) - 1):
             new_w = crop_img[:, word_peaks[i]: word_peaks[i + 1]]
             os.makedirs(os.path.join(path, 'word_' + str(i)))
+
+            cv2.line(rotated, (word_peaks[i], y0), (word_peaks[i], y[0]), (0, 0, 255), 3)
+            # print(y0, y[0], word_peaks[i])
 
             cha_peaks = separate_cha(new_w)
             if len(cha_peaks) == 0:
@@ -463,4 +464,8 @@ for d in dirList:
                     cv2.imwrite(os.path.join(os.path.join(path, 'word_' + str(i)), str(j) + '.jpg'),
                                 new_c)
 
+        y0 = y[0]
+
+    plt.imshow(rotated, cmap=plt.cm.gray)
+    plt.show()
     print("Successfully process image " + d.split('/')[-1].split('jpg')[0])
