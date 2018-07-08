@@ -16,9 +16,9 @@ from skimage.filters import *
 
 from Preprocess.tools.peakdetect import *
 
-# dirList = glob.glob("../Input/*fused.jpg")
+dirList = glob.glob("Input/*.pgm")
 # dirList = glob.glob("../Input/P168-Fg016-R-C01-R01-fused.jpg")
-dirList = glob.glob("../Input/P123-Fg002-R-C01-R01-fused.jpg")
+# dirList = glob.glob("../Input/P123-Fg002-R-C01-R01-fused.jpg")
 # dirList = glob.glob('/Users/Khmer/Downloads/sample-test/run_test/*.pgm')
 
 
@@ -450,7 +450,7 @@ for d in dirList:
                 cv2.imwrite(os.path.join(os.path.join(path, 'word_' + str(i)), str(j) + '.jpg'),
                             new_c)
 
-    plt.imshow(rotated2, cmap=plt.cm.gray)
-    plt.show()
+    # plt.imshow(rotated2, cmap=plt.cm.gray)
+    # plt.show()
     # cv2.imwrite('./d.jpg', rotated2)
     print("Successfully process image " + d.split('/')[-1].split('jpg')[0])
