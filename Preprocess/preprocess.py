@@ -12,10 +12,12 @@ from skimage.filters import *
 from Preprocess.tools.peakdetect import *
 
 # dirList = glob.glob("../Labels/*fused.jpg")
-dirList = glob.glob("../Labels/P168-Fg016-R-C01-R01-fused.jpg")
+# dirList = glob.glob("../Labels/P168-Fg016-R-C01-R01-fused.jpg")
 
 
-# dirList = glob.glob("../Labels/P123-Fg002-R-C01-R01-fused.jpg")
+dirList = glob.glob("../Labels/P123-Fg002-R-C01-R01-fused.jpg")
+
+
 # dirList = glob.glob('/Users/Khmer/Downloads/sample-test/run_test/*.pgm')
 
 
@@ -374,13 +376,14 @@ for d in dirList:
     H, W = rotated.shape[:2]
 
     peaks = peakdetect(hist, lookahead=40)
-    rotated = cv2.cvtColor(rotated, cv2.COLOR_GRAY2BGR)
+
+    rotated2 = cv2.cvtColor(rotated, cv2.COLOR_GRAY2BGR)
 
     peak = []
     for y in peaks[0]:
         peak.append(y[0])
         # plt.plot(y[0], y[1], "r*")
-        cv2.line(rotated, (0, y[0]), (W, y[0]), (255, 0, 0), 3)
+        cv2.line(rotated2, (0, y[0]), (W, y[0]), (255, 0, 0), 3)
     # for y in peaks[1]:
     # peak.append(y[0])
     # plt.plot(y[0], y[1], "g*")
@@ -416,7 +419,7 @@ for d in dirList:
             os.makedirs(os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line)))
         path = os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line))
 
-        crop_img = s_img_2[peak[y]:peak[y + 1], 0:W]
+        crop_img = rotated[peak[y]:peak[y + 1], 0:W]
 
         word_peaks = separate_words(crop_img)
         if len(word_peaks) == 0:
@@ -430,7 +433,7 @@ for d in dirList:
             new_w = crop_img[:, word_peaks[i]: word_peaks[i + 1]]
             os.makedirs(os.path.join(path, 'word_' + str(i)))
 
-            cv2.line(rotated, (word_peaks[i], peak[y]), (word_peaks[i], peak[y + 1]), (0, 0, 255), 3)
+            cv2.line(rotated2, (word_peaks[i], peak[y]), (word_peaks[i], peak[y + 1]), (0, 0, 255), 3)
             # print(y0, y[0], word_peaks[i])
 
             cha_peaks = separate_cha(new_w)
@@ -442,6 +445,6 @@ for d in dirList:
                 cv2.imwrite(os.path.join(os.path.join(path, 'word_' + str(i)), str(j) + '.jpg'),
                             new_c)
 
-    plt.imshow(rotated, cmap=plt.cm.gray)
+    plt.imshow(rotated2, cmap=plt.cm.gray)
     plt.show()
     print("Successfully process image " + d.split('/')[-1].split('jpg')[0])
