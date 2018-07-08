@@ -19,4 +19,4 @@ Project for course handwriting recognition
     python3 CharacterRecognition/run_recognition.py
     ```
     
-6. Check the text files
+6. Check the text files in current folder

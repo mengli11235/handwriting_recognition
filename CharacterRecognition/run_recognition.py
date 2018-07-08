@@ -87,6 +87,9 @@ def recognition(path_data, path_output):
 
 
 if __name__ == '__main__':
-    DIR_DATA = "./segmentation/P123-Fg002-R-C01-R01-fused"
     DIR_OUTPUT = "./"
+    # for folder in [name for name in os.listdir("./segmentation/") if os.path.isdir('./segmentation/' + name)]:
+    DIR_DATA = "./segmentation/" + 'P25-Fg001'
     recognition(DIR_DATA, DIR_OUTPUT)
+    import time
+    time.sleep(5)
