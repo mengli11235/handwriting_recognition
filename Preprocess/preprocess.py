@@ -288,8 +288,8 @@ def crop_blank(img):
     else:
         crop = img[int(h):int(w), :]
 
-    plt.imshow(crop, cmap=plt.cm.gray)
-    plt.show()
+    # plt.imshow(crop, cmap=plt.cm.gray)
+    # plt.show()
 
     # if x < y:
     #     if w < h:
@@ -307,6 +307,9 @@ def crop_blank(img):
 for d in dirList:
     image = cv2.imread(d)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # kernel = np.ones((3, 3), np.float32) / 25
+    # image = cv2.filter2D(image, -1, kernel)
 
     window_size = 59
     thresh_sauvola = threshold_sauvola(image, window_size=window_size, k=0.5)
@@ -411,8 +414,8 @@ for d in dirList:
     # cv2.imwrite(os.path.join(os.path.splitext(d.split('/')[-1])[0], '_t.jpg'), rotated)
     # crop_blank(rotated)
 
-    plt.imshow(rotated2, cmap=plt.cm.gray)
-    plt.show()
+    # plt.imshow(rotated2, cmap=plt.cm.gray)
+    # plt.show()
 
     count_line = 0
     for y in range(len(peak) - 1):
@@ -424,12 +427,12 @@ for d in dirList:
         path = os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line))
 
         crop_img = rotated[peak[y]:peak[y + 1], 0:W]
-        print(peak[y], peak[y + 1])
-        plt.imshow(crop_img, cmap=plt.cm.gray)
-        plt.show()
+        # print(peak[y], peak[y + 1])
+        # plt.imshow(crop_img, cmap=plt.cm.gray)
+        # plt.show()
 
         word_peaks = separate_words(crop_img)
-        print(word_peaks)
+        # print(word_peaks)
 
         count_line += 1
 
