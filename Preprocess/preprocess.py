@@ -403,11 +403,11 @@ for d in dirList:
     # plt.plot(hist)
     # plt.show()
 
-    if not os.path.exists(os.path.splitext(d.split('/')[-1])[0]):
-        os.makedirs(os.path.splitext(d.split('/')[-1])[0])
+    if not os.path.exists(os.path.splitext('segmentation/' + d.split('/')[-1])[0]):
+        os.makedirs(os.path.splitext('segmentation/' + d.split('/')[-1])[0])
     else:
-        shutil.rmtree(os.path.splitext(d.split('/')[-1])[0])
-        os.makedirs(os.path.splitext(d.split('/')[-1])[0])
+        shutil.rmtree(os.path.splitext('segmentation/' + d.split('/')[-1])[0])
+        os.makedirs(os.path.splitext('segmentation/' + d.split('/')[-1])[0])
 
     # cv2.imwrite(os.path.join(os.path.splitext(d.split('/')[-1])[0], '_t.jpg'), rotated)
     # crop_blank(rotated)
@@ -417,12 +417,12 @@ for d in dirList:
 
     count_line = 0
     for y in range(len(peak) - 1):
-        if not os.path.exists(os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line))):
-            os.makedirs(os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line)))
+        if not os.path.exists(os.path.join(os.path.splitext('segmentation/' + d.split('/')[-1])[0], 'line_' + str(count_line))):
+            os.makedirs(os.path.join(os.path.splitext('segmentation/' + d.split('/')[-1])[0], 'line_' + str(count_line)))
         else:
-            shutil.rmtree(os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line)))
-            os.makedirs(os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line)))
-        path = os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line))
+            shutil.rmtree(os.path.join(os.path.splitext('segmentation/' + d.split('/')[-1])[0], 'line_' + str(count_line)))
+            os.makedirs(os.path.join(os.path.splitext('segmentation/' + d.split('/')[-1])[0], 'line_' + str(count_line)))
+        path = os.path.join(os.path.splitext('segmentation/' + d.split('/')[-1])[0], 'line_' + str(count_line))
 
         crop_img = rotated[peak[y]:peak[y + 1], 0:W]
         # print(peak[y], peak[y + 1])
