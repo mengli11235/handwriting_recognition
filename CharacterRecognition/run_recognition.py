@@ -41,6 +41,7 @@ def recognition(path_data, path_output):
 
     # Read all letters
     lines = os.listdir(path_data)
+    # print(lines)
     if lines[0] == '.DS_Store':
         lines.pop(0)  # pop .DSstore
         # print(' Deleted DSstore -+-+-++-+-+-+')
@@ -82,6 +83,6 @@ def recognition(path_data, path_output):
 
 
 if __name__ == '__main__':
-    DIR_DATA = "/Users/Khmer/Developer/handwriting_recognition/Preprocess/P25-Fg001"
-    DIR_OUTPUT = "/Users/Khmer/Developer/handwriting_recognition"
+    DIR_DATA = "../Preprocess/P123-Fg002-R-C01-R01-fused"
+    DIR_OUTPUT = "./"
     recognition(DIR_DATA, DIR_OUTPUT)
