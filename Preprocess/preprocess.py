@@ -1,6 +1,11 @@
+#!/usr/bin/env python
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
+
 import glob
 import math
-import os
 import shutil
 
 import cv2
@@ -11,13 +16,11 @@ from skimage.filters import *
 
 from Preprocess.tools.peakdetect import *
 
-# dirList = glob.glob("../Labels/*fused.jpg")
+dirList = glob.glob("../Labels/*fused.jpg")
+
+
 # dirList = glob.glob("../Labels/P168-Fg016-R-C01-R01-fused.jpg")
-
-
-dirList = glob.glob("../Labels/P123-Fg002-R-C01-R01-fused.jpg")
-
-
+# dirList = glob.glob("../Labels/P123-Fg002-R-C01-R01-fused.jpg")
 # dirList = glob.glob('/Users/Khmer/Downloads/sample-test/run_test/*.pgm')
 
 
@@ -243,7 +246,7 @@ def separate_cha(line):
 def separate_words(line):
     line_hist = cv2.reduce(line, 0, cv2.REDUCE_AVG).reshape(-1)
     new_line = cv2.cvtColor(line, cv2.COLOR_GRAY2BGR)
-    line_peaks = peakdetect(line_hist, lookahead=40)
+    line_peaks = peakdetect(line_hist, lookahead=50)
     Hl, Wl = new_line.shape[:2]
 
     words = []
@@ -259,11 +262,11 @@ def separate_words(line):
     #     words.append(y[0])
     #     cv2.line(new_line, (y[0], 0), (y[0], Hl), (0, 255, 0), 3)
 
-    # words.insert(0, 0)
-    # words.append(Wl)
+    words.insert(0, 0)
+    words.append(Wl)
 
-    plt.imshow(new_line, cmap=plt.cm.gray)
-    plt.show()
+    # plt.imshow(new_line, cmap=plt.cm.gray)
+    # plt.show()
     return words
 
 
@@ -376,7 +379,6 @@ for d in dirList:
     H, W = rotated.shape[:2]
 
     peaks = peakdetect(hist, lookahead=40)
-
     rotated2 = cv2.cvtColor(rotated, cv2.COLOR_GRAY2BGR)
 
     peak = []
@@ -394,10 +396,9 @@ for d in dirList:
     # plt.clf()
 
     peak.insert(0, 0)
-    peak.append(W)
+    peak.append(H)
 
     # print(peak)
-
     # plt.plot(hist)
     # plt.show()
 
@@ -410,6 +411,9 @@ for d in dirList:
     # cv2.imwrite(os.path.join(os.path.splitext(d.split('/')[-1])[0], '_t.jpg'), rotated)
     # crop_blank(rotated)
 
+    plt.imshow(rotated2, cmap=plt.cm.gray)
+    plt.show()
+
     count_line = 0
     for y in range(len(peak) - 1):
         if not os.path.exists(os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line))):
@@ -420,14 +424,14 @@ for d in dirList:
         path = os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line))
 
         crop_img = rotated[peak[y]:peak[y + 1], 0:W]
+        print(peak[y], peak[y + 1])
+        plt.imshow(crop_img, cmap=plt.cm.gray)
+        plt.show()
 
         word_peaks = separate_words(crop_img)
-        if len(word_peaks) == 0:
-            continue
+        print(word_peaks)
 
         count_line += 1
-        # plt.imshow(crop_img, cmap=plt.cm.gray)
-        # plt.show()
 
         for i in range(len(word_peaks) - 1):
             new_w = crop_img[:, word_peaks[i]: word_peaks[i + 1]]
@@ -447,4 +451,5 @@ for d in dirList:
 
     plt.imshow(rotated2, cmap=plt.cm.gray)
     plt.show()
+    # cv2.imwrite('./d.jpg', rotated2)
     print("Successfully process image " + d.split('/')[-1].split('jpg')[0])
