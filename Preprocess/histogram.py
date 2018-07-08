@@ -83,7 +83,7 @@ def threshold_li(image):
     return threshold + immin
 
 
-image = cv2.imread('../Labels/P632-Fg002-R-C01-R01-fused.jpg')
+image = cv2.imread('../Labels/P123-Fg002-R-C01-R01-fused.jpg')
 # image = cv2.imread('../Labels/P583-Fg006-R-C01-R01-fused.jpg')
 # image = cv2.imread('../Labels/P25-Fg001.pgm')
 kernel = np.ones((5, 5), np.float32) / 25

@@ -11,9 +11,9 @@ from skimage.filters import *
 
 from Preprocess.tools.peakdetect import *
 
-# dirList = glob.glob("../Labels/*fused.jpg")
+dirList = glob.glob("../Labels/*fused.jpg")
 # dirList = glob.glob("../Labels/P168-Fg016-R-C01-R01-fused.jpg")
-dirList = glob.glob("../Labels/P846-Fg001-R-C01-R01-fused.jpg")
+# dirList = glob.glob("../Labels/P123-Fg002-R-C01-R01-fused.jpg")
 # dirList = glob.glob('/Users/Khmer/Downloads/sample-test/run_test/*.pgm')
 
 
@@ -223,7 +223,7 @@ def separate_cha(line):
     for y in line_peaks[0]:
         if y[1] >= 235:
             cha.append(y[0])
-        plt.plot(y[0], y[1], "g*")
+        # plt.plot(y[0], y[1], "g*")
         cv2.line(new_line, (y[0], 0), (y[0], Hl), (0, 255, 0), 3)
 
     cha.insert(0, 0)
@@ -246,11 +246,11 @@ def separate_words(line):
     for y in line_peaks[0]:
         if y[1] == 255:
             words.append(y[0])
-        plt.plot(y[0], y[1], "r*")
+        # plt.plot(y[0], y[1], "r*")
         if y[1] == 255:
             cv2.line(new_line, (y[0], 0), (y[0], Hl), (255, 0, 0), 3)
     for y in line_peaks[1]:
-        plt.plot(y[0], y[1], "g*")
+        # plt.plot(y[0], y[1], "g*")
         if y[1] == 255:
             words.append(y[0])
             cv2.line(new_line, (y[0], 0), (y[0], Hl), (0, 255, 0), 3)
@@ -377,23 +377,27 @@ for d in dirList:
     peak = []
     for y in peaks[0]:
         peak.append(y[0])
-        plt.plot(y[0], y[1], "r*")
+        # plt.plot(y[0], y[1], "r*")
         cv2.line(rotated, (0, y[0]), (W, y[0]), (255, 0, 0), 3)
     for y in peaks[1]:
         peak.append(y[0])
-        plt.plot(y[0], y[1], "g*")
-        cv2.line(rotated, (0, y[0]), (W, y[0]), (0, 255, 0), 3)
+        # plt.plot(y[0], y[1], "g*")
+        # cv2.line(rotated, (0, y[0]), (W, y[0]), (0, 255, 0), 3)
+
+    # plt.plot(hist)
+    # plt.savefig('hist.jpg')
+    # plt.clf()
 
     peak.insert(0, 0)
     peak.append(W)
 
-    print(peak)
+    # print(peak)
 
     # plt.plot(hist)
     # plt.show()
-    #
-    # plt.imshow(rotated, cmap=plt.cm.gray)
-    # plt.show()
+
+    plt.imshow(rotated, cmap=plt.cm.gray)
+    plt.show()
 
     if not os.path.exists(os.path.splitext(d.split('/')[-1])[0]):
         os.makedirs(os.path.splitext(d.split('/')[-1])[0])
@@ -406,7 +410,7 @@ for d in dirList:
 
     y0 = 0
     count_line = 0
-    for y in peaks[1]:
+    for y in peaks[0]:
         if not os.path.exists(os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line))):
             os.makedirs(os.path.join(os.path.splitext(d.split('/')[-1])[0], 'line_' + str(count_line)))
         else:
