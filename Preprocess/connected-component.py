@@ -7,8 +7,8 @@ from skimage.filters import threshold_sauvola, threshold_otsu
 
 matplotlib.rcParams['font.size'] = 9
 
-# image = cv2.imread('../Labels/seg_test.jpg')
-image = cv2.imread('../Labels/P166-Fg002-R-C01-R01-fused.jpg')
+# image = cv2.imread('../Input/seg_test.jpg')
+image = cv2.imread('../Input/P166-Fg002-R-C01-R01-fused.jpg')
 
 image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 # cv2.imwrite('gray_image.png', image)

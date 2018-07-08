@@ -178,8 +178,8 @@ def find_degree(image):
     return rotated_image
 
 
-dirList = glob.glob("Labels/*fused.jpg")
-# dirList = glob.glob("Labels/P564-Fg003-R-C01-R01-fused.jpg")
+dirList = glob.glob("Input/*fused.jpg")
+# dirList = glob.glob("Input/P564-Fg003-R-C01-R01-fused.jpg")
 for d in dirList:
     image = cv2.imread(d)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)

@@ -12,7 +12,7 @@ import glob
 os.chdir('./')
 
 
-dirList = glob.glob("Labels/*fused.jpg")
+dirList = glob.glob("Input/*fused.jpg")
 for d in dirList:
     # print(d)
     # read image

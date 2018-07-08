@@ -257,7 +257,7 @@ fabric.properties
 # .idea/misc.xml
 # *.ipr
 
-Labels/*.jpg
+Input/*.jpg
 Output/sauvola/*.jpg
 Output/connected/*.jpg
 Output/connected2/*.jpg

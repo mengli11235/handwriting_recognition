@@ -8,8 +8,8 @@ from skimage.filters import (threshold_otsu, threshold_niblack,
 
 matplotlib.rcParams['font.size'] = 9
 
-image = cv2.imread('../Labels/P166-Fg002-R-C01-R01-fused.jpg')
-# image = cv2.imread('../Labels/P123-Fg001-R-C01-R01-fused.jpg')
+image = cv2.imread('../Input/P166-Fg002-R-C01-R01-fused.jpg')
+# image = cv2.imread('../Input/P123-Fg001-R-C01-R01-fused.jpg')
 
 image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 

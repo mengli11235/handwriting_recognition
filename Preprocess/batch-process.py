@@ -9,7 +9,7 @@ from skimage.filters import (threshold_sauvola, threshold_otsu)
 # set your working directory
 os.chdir('../')
 
-dirList = glob.glob("Labels/*fused.jpg")
+dirList = glob.glob("Input/*fused.jpg")
 for d in dirList:
     image = cv2.imread(d)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)

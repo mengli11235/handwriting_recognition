@@ -83,7 +83,7 @@ def threshold_li(image):
     return threshold + immin
 
 
-dirList = glob.glob("Labels/*fused.jpg")
+dirList = glob.glob("Input/*fused.jpg")
 for d in dirList:
     image = cv2.imread(d)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
