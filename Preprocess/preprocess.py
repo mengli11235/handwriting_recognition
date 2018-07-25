@@ -315,8 +315,8 @@ for d in dirList:
     # binary_global = image > threshold_triangle(image)
     # binary_global = image > threshold_li(image)
     # binary_global = image > threshold_minimum(image)
-    binary_global = image > threshold_li(image)
-    # binary_global = image > threshold_otsu(image)
+    # binary_global = image > threshold_li(image)
+    binary_global = image > threshold_otsu(image)
 
     cv_image = img_as_ubyte(binary_global)
     ret, labels = cv2.connectedComponents(cv_image)
