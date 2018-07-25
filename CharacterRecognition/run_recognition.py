@@ -10,6 +10,7 @@ from preprocess import preprocess
 from network_5 import Network
 from Viterbi import viterbi
 import pickle
+import replace
 
 LOAD_CHECKPOINT_DIR = "./CharacterRecognition/csv/26-06-2018_01-14-43/"
 
@@ -98,3 +99,6 @@ if __name__ == '__main__':
     for folder in [name for name in os.listdir("./segmentation/") if os.path.isdir('./segmentation/' + name)]:
         DIR_DATA = "./segmentation/" + folder
         network = recognition(DIR_DATA, DIR_OUTPUT, network)
+        replace.trans(folder)
+
+
